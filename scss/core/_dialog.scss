@@ -17,6 +17,7 @@ dialog {
   &:not([open]) {
     display: flex;
     opacity: 0;
+    pointer-events: none;
   }
 
   [open] {
