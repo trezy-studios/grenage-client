@@ -13,6 +13,10 @@ import {
   FPSMeter,
   Inventory,
 } from '../components'
+import {
+  StatsDebugPanel,
+  InventoryDebugPanel,
+} from '../components/DebugPanels'
 
 
 
@@ -34,50 +38,21 @@ class Game extends React.Component {
   render () {
     const {
       query,
-      showInventory,
       ui,
     } = this.props
 
     return (
-      <div>
+      <React.Fragment>
         <Inventory open={ui.inventory.isVisible} />
 
         {query.debug && (
-          <FPSMeter />
+          <StatsDebugPanel />
         )}
 
-        <button onClick={showInventory}>
-          Open Inventory
-        </button>
-
-        <button onClick={() => {
-            this.props.addItem({
-              name: 'Log',
-              quantity: 10,
-              weight: 3,
-            })
-          }}>
-          Add 10x Logs
-        </button>
-
-        <button onClick={() => {
-            this.props.addItem({
-              name: 'Key',
-              quality: 'Gold',
-            })
-          }}>
-          Add Gold Key
-        </button>
-
-        <button onClick={() => {
-            this.props.addItem({
-              name: 'Key',
-              quality: 'Rusty',
-            })
-          }}>
-          Add Rusty Key
-        </button>
-      </div>
+        {query.debug && (
+          <InventoryDebugPanel />
+        )}
+      </React.Fragment>
     )
   }
 }

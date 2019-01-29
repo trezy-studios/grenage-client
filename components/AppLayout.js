@@ -80,10 +80,11 @@ class AppLayout extends React.Component {
         <link
           href={`//fonts.googleapis.com/css?family=${['Press Start 2P'].join('|').replace(/\s/g, '+')}`}
           rel="stylesheet" />
+
+        <div id="debug-root" />
+
         {(statusCode === 200) && (
-          <main>
-            <Component {...pageProps} />
-          </main>
+          <Component {...pageProps} />
         )}
 
         {(statusCode !== 200) && (

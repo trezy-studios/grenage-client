@@ -1,0 +1,10 @@
+#debug-root {
+  background-color: black;
+  overflow: auto;
+  padding: 2rem;
+  width: 20vw;
+
+  > details:not(:last-child) {
+    margin-bottom: 2rem;
+  }
+}

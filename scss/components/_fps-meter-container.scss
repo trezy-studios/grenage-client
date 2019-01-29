@@ -1,0 +1,8 @@
+.fps-meter-container {
+  display: block;
+  overflow: hidden;
+
+  > div {
+    inset: initial !important;
+  }
+}
