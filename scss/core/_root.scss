@@ -1,0 +1,30 @@
+* {
+  box-sizing: border-box;
+  image-rendering: pixelated;
+}
+
+html, body, [role=application] {
+  background-color: var(--background-color);
+  height: 100vh;
+  width: 100vw;
+}
+
+html {
+  font-size: 10px;
+}
+
+body {
+  font-family: 'Press Start 2P', sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+[role=application] {
+  background-image: url(/static/tiles/grass.png);
+  background-size: calc(128px * 2);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  height: auto;
+  min-height: 100vh;
+}

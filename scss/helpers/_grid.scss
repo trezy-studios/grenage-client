@@ -1,0 +1,33 @@
+.grid {
+  $gutter: 2rem;
+  $column-layouts: (2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
+
+  align-items: flex-start;
+  display: grid;
+  grid-gap: $gutter;
+  // padding: $gutter;
+
+  @each $column-count in $column-layouts {
+    $column-count-string: number-to-string($column-count);
+
+    &.#{$column-count-string}-columns {
+      grid-template-columns: repeat(#{$column-count}, 1fr);
+    }
+
+    > .span-#{$column-count-string} {
+      grid-column: span #{$column-count};
+    }
+  }
+
+  @for $offset from 1 through 11 {
+    $offset-string: number-to-string($offset);
+
+    @for $child from 1 through 11 {
+      > .offset-#{$offset-string} {
+        &:nth-child(#{$child}n) {
+          grid-column-start: $offset + $child;
+        }
+      }
+    }
+  }
+}

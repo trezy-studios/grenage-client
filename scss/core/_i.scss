@@ -1,0 +1,15 @@
+i {
+  background-size: cover;
+  display: inline-block;
+  height: $icon-size-regular;
+  width: $icon-size-regular;
+
+  > svg {
+    height: 100%;
+    width: 100%;
+
+    * {
+      fill: currentColor;
+    }
+  }
+}
