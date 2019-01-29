@@ -12,8 +12,8 @@ class FPSMeter extends React.Component {
     this.meterController = new window.FPSMeter(this.meterEl.current, {
       graph: true,
       heat: true,
-      history: 200,
-      position: 'static',
+      history: Math.floor((window.innerWidth / 5) / 5),
+      position: 'relative',
     })
 
     this._updateMeter()
@@ -31,7 +31,9 @@ class FPSMeter extends React.Component {
 
   render () {
     return (
-      <div ref={this.meterEl} />
+      <div
+        className="fps-meter-container"
+        ref={this.meterEl} />
     )
   }
 }
