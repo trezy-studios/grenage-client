@@ -11,7 +11,7 @@ import React from 'react'
 
 // Local imports
 import { actions } from '../store'
-import getItemURL from '../helpers/getItemURL'
+import { getItemURL } from '../helpers'
 
 
 

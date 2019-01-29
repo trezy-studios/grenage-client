@@ -15,6 +15,7 @@ import thunkMiddleware from 'redux-thunk'
 import * as actions from './actions'
 import defaultState from './initialState'
 import reducer from './reducers'
+import { isBrowser } from '../helpers'
 
 
 
@@ -23,7 +24,7 @@ import reducer from './reducers'
 const initStore = (initialState = defaultState) => {
   let reduxComposition = null
 
-  if (typeof window !== 'undefined') {
+  if (isBrowser()) {
     const reductionWorker = new (require('./redux.worker.js'))
 
     reduxComposition = composeWithDevTools(
