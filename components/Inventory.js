@@ -57,19 +57,16 @@ class Inventory extends React.Component {
           </menu>
         </header>
 
-        <section className="panel">
+        <p>You have {inventory.totalQuantity} items in your backpack.</p>
 
-          <p className="panel">You have {inventory.totalQuantity} items in your backpack.</p>
-
-          <ol className="four-columns grid hide-if-empty">
-            {inventory.items.map((item, index) => (
-              <InventoryItemSlot
-                item={item}
-                key={item ? item.id : index}
-                slot={index} />
-            ))}
-          </ol>
-        </section>
+        <ol className="four-columns grid hide-if-empty">
+          {inventory.items.map((item, index) => (
+            <InventoryItemSlot
+              item={item}
+              key={item ? item.id : index}
+              slot={index} />
+          ))}
+        </ol>
       </dialog>
     )
   }

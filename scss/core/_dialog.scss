@@ -26,6 +26,7 @@ dialog {
 
   > header,
   > footer {
+    flex-shrink: 0;
     padding: 2rem;
   }
 
@@ -44,6 +45,8 @@ dialog {
   }
 
   > *:not(header):not(footer) {
+    flex-shrink: 0;
+    margin-bottom: 2rem;
     margin-left: 2rem;
     margin-right: 2rem;
   }
