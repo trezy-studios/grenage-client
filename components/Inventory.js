@@ -57,7 +57,7 @@ class Inventory extends React.Component {
           </menu>
         </header>
 
-        <p>You have {inventory.totalQuantity} items in your backpack.</p>
+        <p>Your pack currently weighs {inventory.totalWeight}kg.</p>
 
         <ol className="four-columns grid hide-if-empty">
           {inventory.items.map((item, index) => (
