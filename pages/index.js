@@ -10,7 +10,7 @@ import React from 'react'
 // Local imports
 import { actions } from '../store'
 import {
-  FPSMeter,
+  Game,
   Inventory,
 } from '../components'
 import {
@@ -34,7 +34,7 @@ const mapStateToProps = ({ ui }) => ({ ui })
 
 
 @connect(mapStateToProps, mapDispatchToProps)
-class Game extends React.Component {
+class Home extends React.Component {
   render () {
     const {
       query,
@@ -43,6 +43,8 @@ class Game extends React.Component {
 
     return (
       <React.Fragment>
+        <Game />
+
         <Inventory open={ui.inventory.isVisible} />
 
         {query.debug && (
@@ -61,4 +63,4 @@ class Game extends React.Component {
 
 
 
-export default Game
+export default Home

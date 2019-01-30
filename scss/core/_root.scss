@@ -20,8 +20,7 @@ body {
 }
 
 [role=application] {
-  background-image: url(/static/tiles/grass.png);
-  background-size: calc(128px * 2);
+  align-content: stretch;
   color: white;
   display: flex;
 }

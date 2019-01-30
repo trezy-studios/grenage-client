@@ -1,5 +1,6 @@
 export * from './AppLayout'
 export * from './FPSMeter'
+export * from './Game'
 export * from './Icon'
 export * from './Inventory'
 export * from './InventoryItem'
