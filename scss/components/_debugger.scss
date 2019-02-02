@@ -4,6 +4,10 @@
   padding: 2rem;
   width: 20vw;
 
+  &:empty {
+    display: none;
+  }
+
   > details:not(:last-child) {
     margin-bottom: 2rem;
   }
