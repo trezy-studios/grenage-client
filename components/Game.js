@@ -109,6 +109,7 @@ class Game extends React.Component {
     Body.setVelocity(this.playerEntity.body, velocity)
 
     Engine.update(this.engine)
+
     this.forceUpdate()
   }
 
@@ -189,6 +190,10 @@ class Game extends React.Component {
 
               const maskID = `sprite-mask-${id}`
 
+              if (!entity.imageData) {
+                return null
+              }
+
               return (
                 <g
                   key={id}
@@ -201,16 +206,16 @@ class Game extends React.Component {
                       fill="white"
                       height={entity.size.y}
                       key={id}
+                      transform={`translate(${entity.currentFrame.frame.x}, ${entity.currentFrame.frame.y})`}
                       width={entity.size.x} />
                   </mask>
 
-                  {entity.imageData && (
-                    <image
-                      height={entity.imageData.meta.size.h}
-                      mask={`url(#${maskID})`}
-                      width={entity.imageData.meta.size.w}
-                      xlinkHref={entity.imageURL} />
-                  )}
+                  <image
+                    height={entity.imageData.meta.size.h}
+                    mask={`url(#${maskID})`}
+                    transform={`translate(${-entity.currentFrame.frame.x}, ${entity.currentFrame.frame.y})`}
+                    width={entity.imageData.meta.size.w}
+                    xlinkHref={entity.imageURL} />
                 </g>
               )
             })}

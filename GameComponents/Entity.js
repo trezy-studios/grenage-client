@@ -5,6 +5,13 @@ import { Bodies } from 'matter-js'
 
 
 
+// Local imports
+import { isNumberInRange } from '../helpers'
+
+
+
+
+
 class Entity {
   /***************************************************************************\
     Local Properties
@@ -27,24 +34,6 @@ class Entity {
   async _getImageData () {
     const response = await fetch(`${this.baseURL}/${this.type}.json`)
     this.imageData = await response.json()
-    this._updateSprite()
-  }
-
-  _updateSprite = () => {
-    const spriteData = this.body.render.sprite
-
-    if (!spriteData.texture) {
-      let imageURL = this.imageData.meta.image
-      imageURL = imageURL.substring(imageURL.indexOf(this.baseURL))
-      this.body.render.sprite = {
-        ...spriteData.texture,
-        offsetX: 0.5,
-        offsetY: 0.5,
-        texture: imageURL,
-        xScale: 5,
-        yScale: 5,
-      }
-    }
   }
 
   static _validate (options) {
@@ -109,7 +98,19 @@ class Entity {
   }
 
   get currentFrame () {
-    return 0
+    const frameTag = this.frameTags.find(({ name }) => name === this.state)
+
+    if (!this._currentFrameIndex || !isNumberInRange(this._currentFrameIndex, [frameTag.from, frameTag.to]) || this._currentFrameIndex === frameTag.to) {
+      this._currentFrameIndex = frameTag.from
+    } else {
+      this._currentFrameIndex += 1
+    }
+
+    return this.imageData.frames[this._currentFrameIndex]
+  }
+
+  get frameTags () {
+    return this.imageData.meta.frameTags
   }
 
   get imageURL () {
@@ -155,6 +156,14 @@ class Entity {
     }
 
     return this._size
+  }
+
+  get state () {
+    if ((this.body.velocity.x !== 0) || (this.body.velocity.y !== 0)) {
+      return 'walk'
+    }
+
+    return 'idle'
   }
 
   get type () {
