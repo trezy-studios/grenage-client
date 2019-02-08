@@ -5,13 +5,6 @@ import { Bodies } from 'matter-js'
 
 
 
-// Local imports
-import { isNumberInRange } from '../helpers'
-
-
-
-
-
 class Entity {
   /***************************************************************************\
     Local Properties
@@ -28,7 +21,7 @@ class Entity {
 
 
   /***************************************************************************\
-    Public Methods
+    Private Methods
   \***************************************************************************/
 
   async _getImageData () {
@@ -98,12 +91,52 @@ class Entity {
   }
 
   get currentFrame () {
-    const frameTag = this.frameTags.find(({ name }) => name === this.state)
+    this._currentFrameIndex || (this._currentFrameIndex = 0)
+    this._currentFrameDuration || (this._currentFrameDuration = 0)
 
-    if (!this._currentFrameIndex || !isNumberInRange(this._currentFrameIndex, [frameTag.from, frameTag.to]) || this._currentFrameIndex === frameTag.to) {
-      this._currentFrameIndex = frameTag.from
+    const currentFrame = this.imageData.frames[this._currentFrameIndex]
+    const frameTag = this.frameTags.find(({ name }) => name === this.state)
+    let frameIsComplete = this._currentFrameDuration >= currentFrame.duration
+
+    if (frameTag.direction === 'pingpong') {
+      this._pingPongDirection || (this._pingPongDirection = 'forward')
+    }
+
+    if (frameIsComplete) {
+      this._currentFrameDuration = 0
+
+      if (frameTag.direction === 'forward') {
+        if (this._currentFrameIndex >= frameTag.to) {
+          this._currentFrameIndex = frameTag.from
+        } else {
+          this._currentFrameIndex += 1
+        }
+      } else if (frameTag.direction === 'reverse') {
+        if (this._currentFrameIndex <= frameTag.from) {
+          this._currentFrameIndex = frameTag.to
+        } else {
+          this._currentFrameIndex -= 1
+        }
+      } else {
+        // ping pong
+        if (this._pingPongDirection === 'forward') {
+          if (this._currentFrameIndex >= frameTag.to) {
+            this._pingPongDirection = 'reverse'
+            this._currentFrameIndex -= 1
+          } else {
+            this._currentFrameIndex += 1
+          }
+        } else {
+          if (this._currentFrameIndex <= frameTag.from) {
+            this._pingPongDirection = 'forward'
+            this._currentFrameIndex += 1
+          } else {
+            this._currentFrameIndex -= 1
+          }
+        }
+      }
     } else {
-      this._currentFrameIndex += 1
+      this._currentFrameDuration += 16
     }
 
     return this.imageData.frames[this._currentFrameIndex]

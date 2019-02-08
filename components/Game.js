@@ -114,8 +114,8 @@ class Game extends React.Component {
   }
 
   _start = async () => {
-    await this._updateSize()
     this._generateInitialBodies()
+    await this._updateSize()
 
     this.engine.world.gravity.y = 0
     
@@ -194,6 +194,11 @@ class Game extends React.Component {
                 return null
               }
 
+              const {
+                x: imageX,
+                y: imageY,
+              } = entity.currentFrame.frame
+
               return (
                 <g
                   key={id}
@@ -205,15 +210,14 @@ class Game extends React.Component {
                     <rect
                       fill="white"
                       height={entity.size.y}
-                      key={id}
-                      transform={`translate(${entity.currentFrame.frame.x}, ${entity.currentFrame.frame.y})`}
+                      transform={`translate(${imageX}, ${imageY})`}
                       width={entity.size.x} />
                   </mask>
 
                   <image
                     height={entity.imageData.meta.size.h}
                     mask={`url(#${maskID})`}
-                    transform={`translate(${-entity.currentFrame.frame.x}, ${entity.currentFrame.frame.y})`}
+                    transform={`translate(${-imageX}, ${imageY})`}
                     width={entity.imageData.meta.size.w}
                     xlinkHref={entity.imageURL} />
                 </g>
