@@ -43,6 +43,7 @@ class Game extends React.Component {
   keysPressed = {
     ' ': false,
     a: false,
+    control: false,
     d: false,
     s: false,
     shift: false,
@@ -95,7 +96,15 @@ class Game extends React.Component {
   }
 
   _render = () => {
-    const velocityMultiplier = this.keysPressed['shift'] ? 0.75 : 0.5
+    let velocityMultiplier = 0.25
+
+    if (this.keysPressed['shift']) {
+      velocityMultiplier = 0.6
+    }
+
+    if (this.keysPressed['control']) {
+      velocityMultiplier = 0.1
+    }
 
     const velocity = {
       x: ((+this.keysPressed['d']) - (+this.keysPressed['a'])) * velocityMultiplier,
@@ -118,7 +127,7 @@ class Game extends React.Component {
     await this._updateSize()
 
     this.engine.world.gravity.y = 0
-    
+
     World.add(this.engine.world, this.bodies)
 
     Engine.run(this.engine)
