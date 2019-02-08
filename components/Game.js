@@ -123,8 +123,8 @@ class Game extends React.Component {
   }
 
   _start = async () => {
-    this._generateInitialBodies()
     await this._updateSize()
+    this._generateInitialBodies()
 
     this.engine.world.gravity.y = 0
 
