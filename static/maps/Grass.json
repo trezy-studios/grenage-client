@@ -1,0 +1,200 @@
+{ "columns":8,
+ "image":"grass.png",
+ "imageheight":128,
+ "imagewidth":256,
+ "margin":0,
+ "name":"Grass",
+ "spacing":0,
+ "terrains":[
+        {
+         "name":"Grass",
+         "tile":26
+        }],
+ "tilecount":32,
+ "tiledversion":"1.2.2",
+ "tileheight":32,
+ "tiles":[
+        {
+         "id":0,
+         "terrain":[0, 0, 0, 0]
+        }, 
+        {
+         "id":1,
+         "terrain":[0, 0, 0, 0]
+        }, 
+        {
+         "id":2,
+         "terrain":[0, 0, 0, 0]
+        }, 
+        {
+         "id":3,
+         "terrain":[0, 0, 0, 0]
+        }, 
+        {
+         "id":4,
+         "terrain":[0, 0, 0, 0]
+        }, 
+        {
+         "id":5,
+         "terrain":[0, 0, 0, 0]
+        }, 
+        {
+         "id":6,
+         "terrain":[0, 0, 0, 0]
+        }, 
+        {
+         "id":7,
+         "terrain":[0, 0, 0, 0]
+        }, 
+        {
+         "id":8,
+         "terrain":[0, 0, 0, 0]
+        }, 
+        {
+         "id":9,
+         "terrain":[0, 0, 0, 0]
+        }, 
+        {
+         "id":10,
+         "terrain":[0, 0, 0, 0]
+        }, 
+        {
+         "id":11,
+         "terrain":[0, 0, 0, 0]
+        }, 
+        {
+         "id":12,
+         "terrain":[0, 0, 0, 0]
+        }, 
+        {
+         "id":13,
+         "terrain":[0, 0, 0, 0]
+        }, 
+        {
+         "id":14,
+         "terrain":[0, 0, 0, 0]
+        }, 
+        {
+         "id":15,
+         "terrain":[0, 0, 0, 0]
+        }, 
+        {
+         "id":16,
+         "terrain":[0, 0, 0, 0]
+        }, 
+        {
+         "id":17,
+         "terrain":[0, 0, 0, 0]
+        }, 
+        {
+         "id":18,
+         "terrain":[0, 0, 0, 0]
+        }, 
+        {
+         "id":19,
+         "terrain":[0, 0, 0, 0]
+        }, 
+        {
+         "id":20,
+         "terrain":[0, 0, 0, 0]
+        }, 
+        {
+         "id":21,
+         "terrain":[0, 0, 0, 0]
+        }, 
+        {
+         "id":22,
+         "terrain":[0, 0, 0, 0]
+        }, 
+        {
+         "id":23,
+         "terrain":[0, 0, 0, 0]
+        }, 
+        {
+         "id":24,
+         "objectgroup":
+            {
+             "draworder":"index",
+             "name":"",
+             "objects":[
+                    {
+                     "height":5.24338023245652,
+                     "id":2,
+                     "name":"",
+                     "rotation":0,
+                     "type":"",
+                     "visible":true,
+                     "width":17.3322846572868,
+                     "x":2.76733956712983,
+                     "y":21.8474176352355
+                    }],
+             "opacity":1,
+             "type":"objectgroup",
+             "visible":true,
+             "x":0,
+             "y":0
+            },
+         "probability":0.5,
+         "terrain":[0, 0, 0, 0]
+        }, 
+        {
+         "id":25,
+         "objectgroup":
+            {
+             "draworder":"index",
+             "name":"",
+             "objects":[
+                    {
+                     "height":6.99117364327537,
+                     "id":3,
+                     "name":"",
+                     "rotation":0,
+                     "type":"",
+                     "visible":true,
+                     "width":17.5507588336392,
+                     "x":8.66614232864342,
+                     "y":19.1529027935565
+                    }],
+             "opacity":1,
+             "type":"objectgroup",
+             "visible":true,
+             "x":0,
+             "y":0
+            },
+         "probability":0.5,
+         "terrain":[0, 0, 0, 0]
+        }, 
+        {
+         "id":26,
+         "probability":100,
+         "terrain":[0, 0, 0, 0]
+        }, 
+        {
+         "id":27,
+         "probability":0.3,
+         "terrain":[0, 0, 0, 0]
+        }, 
+        {
+         "id":28,
+         "probability":0.3,
+         "terrain":[0, 0, 0, 0]
+        }, 
+        {
+         "id":29,
+         "probability":0.3,
+         "terrain":[0, 0, 0, 0]
+        }, 
+        {
+         "id":30,
+         "probability":0.3,
+         "terrain":[0, 0, 0, 0]
+        }, 
+        {
+         "id":31,
+         "probability":0.3,
+         "terrain":[0, 0, 0, 0]
+        }],
+ "tilewidth":32,
+ "type":"tileset",
+ "version":1.2
+}
