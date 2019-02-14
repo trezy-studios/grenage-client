@@ -3,6 +3,7 @@ import {
   Body,
   Composite,
   Engine,
+  Events,
   World,
 } from 'matter-js'
 import { bindActionCreators } from 'redux'
@@ -72,6 +73,9 @@ class Game extends React.Component {
 
     window.addEventListener('keyup', this._handleKeyup)
     window.addEventListener('keydown', this._handleKeydown)
+
+    Events.on(this.engine, 'collisionStart', event => this._handleCollisionEvent(true, event))
+    Events.on(this.engine, 'collisionEnd', event => this._handleCollisionEvent(false, event))
   }
 
   _generateInitialBodies () {
@@ -87,6 +91,26 @@ class Game extends React.Component {
     this.entities.push(player)
   }
 
+  _handleCollisionEvent = (isStarting, { pairs }) => {
+    for (const pair of pairs) {
+      const {
+        bodyA,
+        bodyB,
+        isSensor,
+      } = pair
+
+      if (isSensor && (bodyA.parent !== bodyB.parent)) {
+        if (['bottom', 'left', 'right', 'top'].includes(bodyA.label)) {
+          bodyA.parent.entity.contact[bodyA.label] = isStarting
+        }
+
+        if (['bottom', 'left', 'right', 'top'].includes(bodyB.label)) {
+          bodyB.parent.entity.contact[bodyB.label] = isStarting
+        }
+      }
+    }
+  }
+
   _handleKeyup = event => {
     this.keysPressed[event.key.toLowerCase()] = false
   }
@@ -96,6 +120,22 @@ class Game extends React.Component {
   }
 
   _render = () => {
+    const {
+      x: playerX,
+      y: playerY,
+    } = this.playerEntity.body.position
+    const {
+      height,
+      width,
+    } = this.state
+    const {
+      x: playerWidth,
+      y: playerHeight,
+    } = this.playerEntity.size
+    const velocity = {
+      x: 0,
+      xy: 0,
+    }
     let velocityMultiplier = 0.25
 
     if (this.keysPressed['shift']) {
@@ -106,13 +146,33 @@ class Game extends React.Component {
       velocityMultiplier = 0.1
     }
 
-    const velocity = {
-      x: ((+this.keysPressed['d']) - (+this.keysPressed['a'])) * velocityMultiplier,
-      y: ((+this.keysPressed['s']) - (+this.keysPressed['w'])) * velocityMultiplier,
-    }
+    velocity.x = ((+this.keysPressed['d']) - (+this.keysPressed['a'])) * velocityMultiplier
+    velocity.y = ((+this.keysPressed['s']) - (+this.keysPressed['w'])) * velocityMultiplier
 
     if (velocity.x !== 0) {
       this.playerEntity.direction = (velocity.x > 0) ? 'right' : 'left'
+    }
+
+    const playerIsPushingAgainstBottomOfMap = (playerY >= ((height * 2) - playerHeight)) && this.keysPressed['s']
+    const playerIsPushingAgainstLeftOfMap = (playerX <= 0) && this.keysPressed['a']
+    const playerIsPushingAgainstRightOfMap = (playerX >= ((width * 2) - playerWidth)) && this.keysPressed['d']
+    const playerIsPushingAgainstTopOfMap = (playerY <= 0) && this.keysPressed['w']
+
+    const playerIsMovingIntoEntityOnBottom = this.playerEntity.contact.bottom && (velocity.y > 0)
+    const playerIsMovingIntoEntityOnLeft = this.playerEntity.contact.left && (velocity.x < 0)
+    const playerIsMovingIntoEntityOnRight = this.playerEntity.contact.right && (velocity.x > 0)
+    const playerIsMovingIntoEntityOnTop = this.playerEntity.contact.top && (velocity.y < 0)
+
+    if (playerIsPushingAgainstLeftOfMap || playerIsPushingAgainstRightOfMap || playerIsMovingIntoEntityOnLeft || playerIsMovingIntoEntityOnRight) {
+      velocity.x = 0
+    }
+
+    if (playerIsPushingAgainstBottomOfMap || playerIsPushingAgainstTopOfMap || playerIsMovingIntoEntityOnBottom || playerIsMovingIntoEntityOnTop) {
+      velocity.y = 0
+    }
+
+    if (this.keysPressed[' ']) {
+      console.log('Attack!')
     }
 
     Body.setVelocity(this.playerEntity.body, velocity)
@@ -186,55 +246,87 @@ class Game extends React.Component {
         <svg
           height={height}
           ref={this.svgElement}
+          version="1.2"
+          viewBox={`${viewX} ${viewY} ${width} ${height}`}
           width={width}>
-          <g id="game-background" />
 
           <g id="game-entities">
             {Composite.allBodies(this.engine.world).map(body => {
-              const {
-                id,
-                entity,
-                position,
-              } = body
+              return body.parts.map(bodyPart => {
+                if (bodyPart === body) {
+                  return (
+                    <text
+                      dy="-3em"
+                      key={bodyPart.id}
+                      style={{
+                        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                        fontSize: '6px',
+                      }}
+                      textAnchor="middle"
+                      x={bodyPart.position.x}
+                      y={bodyPart.position.y}>
+                      {bodyPart.label}
+                    </text>
+                  )
+                }
 
-              const maskID = `sprite-mask-${id}`
+                const { vertices } = bodyPart
+                let path = ''
 
-              if (!entity.imageData) {
-                return null
+                for (const vertex of bodyPart.vertices) {
+                  if (!path) {
+                    path += `M${vertex.x},${vertex.y}`
+                  } else {
+                    path += `L${vertex.x},${vertex.y}`
+                  }
               }
 
-              const {
-                x: imageX,
-                y: imageY,
-              } = entity.currentFrame.frame
+                path += 'Z'
 
               return (
-                <g
-                  key={id}
-                  transform={[
-                    `translate(${Math.floor(position.x + ((entity.direction === 'left') ? entity.size.x : 0))}, ${Math.floor(position.y)})`,
-                    `scale(${(entity.direction === 'left') ? -1 : 1}, 1)`
-                  ].join(', ')}>
-                  <mask id={maskID}>
-                    <rect
-                      fill="white"
-                      height={entity.size.y}
-                      transform={`translate(${imageX}, ${imageY})`}
-                      width={entity.size.x} />
-                  </mask>
+                  <path
+                    d={path}
+                    fill={bodyPart.isSensor ? 'pink' : 'purple'}
+                    key={bodyPart.id} />
+                )
+              })
 
-                  <image
-                    height={entity.imageData.meta.size.h}
-                    mask={`url(#${maskID})`}
-                    transform={`translate(${-imageX}, ${imageY})`}
-                    width={entity.imageData.meta.size.w}
-                    xlinkHref={entity.imageURL} />
-                </g>
-              )
+              // const maskID = `sprite-mask-${id}`
+
+              // if (!entity.imageData) {
+              //   return null
+              // }
+
+              // const {
+              //   x: imageX,
+              //   y: imageY,
+              // } = entity.currentFrame.frame
+
+              // return (
+              //   <g
+              //     key={id}
+              //     transform={[
+              //       `translate(${Math.floor(position.x + ((entity.direction === 'left') ? entity.size.x : 0))}, ${Math.floor(position.y)})`,
+              //       `scale(${(entity.direction === 'left') ? -1 : 1}, 1)`
+              //     ].join(', ')}>
+              //     <mask id={maskID}>
+              //       <rect
+              //         fill="white"
+              //         height={entity.size.y}
+              //         transform={`translate(${imageX}, ${imageY})`}
+              //         width={entity.size.x} />
+              //     </mask>
+
+              //     <image
+              //       height={entity.imageData.meta.size.h}
+              //       mask={`url(#${maskID})`}
+              //       transform={`translate(${-imageX}, ${imageY})`}
+              //       width={entity.imageData.meta.size.w}
+              //       xlinkHref={entity.imageURL} />
+              //   </g>
+              // )
             })}
           </g>
-
-          <g id="game-hud" />
         </svg>
       </main>
     )
