@@ -45,7 +45,7 @@
   "scale": "1",
   "frameTags": [
    { "name": "idle", "from": 0, "to": 0, "direction": "forward" },
-   { "name": "walk", "from": 1, "to": 3, "direction": "forward" }
+   { "name": "walk", "from": 1, "to": 3, "direction": "pingpong" }
   ],
   "layers": [
    { "name": "Layer 1", "opacity": 255, "blendMode": "normal" }
