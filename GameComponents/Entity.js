@@ -1,5 +1,8 @@
 // Module imports
-import { Bodies } from 'matter-js'
+import {
+  Bodies,
+  Body,
+} from 'matter-js'
 
 
 
@@ -11,6 +14,13 @@ class Entity {
   \***************************************************************************/
 
   baseURL = '/static/entities'
+
+  contact = {
+    bottom: false,
+    left: false,
+    right: false,
+    top: false,
+  }
 
   imageData = undefined
 
@@ -76,15 +86,41 @@ class Entity {
 
   get body () {
     if (!this._body) {
-      const body = Bodies.rectangle(this.initialPosition.x, this.initialPosition.y, this.size.x, this.size.y)
+      const chamferRadius = 10
+      this._body = Body.create({
+        parts: [
+          Bodies.rectangle(0, 0, this.size.x, this.size.y, {
+            chamfer: {
+              radius: chamferRadius,
+            },
+            label: 'character',
+          }),
+          Bodies.rectangle(0, (-this.size.y / 2), (this.size.x - chamferRadius), 1, {
+            isSensor: true,
+            label: 'top',
+          }),
+          Bodies.rectangle(0, (this.size.y / 2), (this.size.x - chamferRadius), 1, {
+            isSensor: true,
+            label: 'bottom',
+          }),
+          Bodies.rectangle((-this.size.x / 2), 0, 1, (this.size.y - chamferRadius), {
+            isSensor: true,
+            label: 'left',
+          }),
+          Bodies.rectangle((this.size.x / 2), 0, 1, (this.size.y - chamferRadius), {
+            isSensor: true,
+            label: 'right',
+          }),
+        ],
+        frictionStatic: 0,
+        frictionAir: 0.1,
+        inertia: Infinity,
+        label: this.label || 'unknown',
+      })
 
-      body.entity = this
+      Body.setPosition(this._body, this.initialPosition)
 
-      if (this.label) {
-        body.label = this.label
-      }
-
-      this._body = body
+      this._body.entity = this
     }
 
     return this._body
@@ -166,6 +202,10 @@ class Entity {
     }
   }
 
+  get label () {
+    return this.options.label
+  }
+
   get size () {
     if (!this._size) {
       let size = this.options.size
@@ -192,7 +232,7 @@ class Entity {
   }
 
   get state () {
-    if ((this.body.velocity.x !== 0) || (this.body.velocity.y !== 0)) {
+    if (this.body.speed > 0.001) {
       return 'walk'
     }
 
