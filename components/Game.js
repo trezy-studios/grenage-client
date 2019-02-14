@@ -17,8 +17,13 @@ import React from 'react'
 
 
 // Local imports
+import {
+  Entity,
+  Map,
+} from '../GameComponents'
 import { actions } from '../store'
-import { Entity } from '../GameComponents'
+import { isBrowser } from '../helpers'
+import { MapRenderer } from '../components'
 
 
 
@@ -53,6 +58,8 @@ class Game extends React.Component {
 
   entities = []
 
+  map = undefined
+
   playerEntity = undefined
 
   state = {
@@ -78,6 +85,12 @@ class Game extends React.Component {
     Events.on(this.engine, 'collisionEnd', event => this._handleCollisionEvent(false, event))
   }
 
+  _generateMap () {
+    this.map = new Map({
+      type: 'Hometown',
+    })
+  }
+
   _generateInitialBodies () {
     const player = new Entity({
       initialPosition: this.center,
@@ -89,6 +102,15 @@ class Game extends React.Component {
     this.playerEntity = player
 
     this.entities.push(player)
+    this.entities.push(new Entity({
+      initialPosition: {
+        ...this.center,
+        x: this.center.x - 50,
+      },
+      label: 'Gelatinous Cube',
+      size: 32,
+      type: 'knight',
+    }))
   }
 
   _handleCollisionEvent = (isStarting, { pairs }) => {
@@ -184,6 +206,7 @@ class Game extends React.Component {
 
   _start = async () => {
     await this._updateSize()
+    this._generateMap()
     this._generateInitialBodies()
 
     this.engine.world.gravity.y = 0
@@ -239,10 +262,49 @@ class Game extends React.Component {
       width,
     } = this.state
 
+    let viewX = 0
+    let viewY = 0
+
+    if (this.playerEntity) {
+      const {
+        x: playerX,
+        y: playerY,
+      } = this.playerEntity.body.position
+
+      viewX = playerX - (width / 2)
+      viewY = playerY - (height / 2)
+
+      if (viewX <= 0) {
+        viewX = 0
+      } else if (viewX >= width) {
+        viewX = width
+      }
+
+      if (viewY <= 0) {
+        viewY = 0
+      } else if (viewY >= height) {
+        viewY = height
+      }
+    }
+
+    let offsetX = viewX
+    let offsetY = viewY
+
     return (
       <main
         className="game"
         ref={this.mainElement}>
+
+        <MapRenderer
+          height={height}
+          mapName="Hometown"
+          offsetX={offsetX}
+          offsetY={offsetY}
+          rafael={this.rafael}
+          width={width} />
+
+        {/* <canvas id="game-entities" /> */}
+
         <svg
           height={height}
           ref={this.svgElement}
@@ -279,11 +341,11 @@ class Game extends React.Component {
                   } else {
                     path += `L${vertex.x},${vertex.y}`
                   }
-              }
+                }
 
                 path += 'Z'
 
-              return (
+                return (
                   <path
                     d={path}
                     fill={bodyPart.isSensor ? 'pink' : 'purple'}
@@ -356,6 +418,10 @@ class Game extends React.Component {
   }
 
   get rafael () {
+    if (!isBrowser()) {
+      return null
+    }
+
     return this._rafael || (this._rafael = new Rafael)
   }
 }
