@@ -33,8 +33,9 @@ import { MapRenderer } from '../components'
 const mapDispatchToProps = dispatch => bindActionCreators({
   addItem: actions.inventory.addItem,
   destroyItem: actions.inventory.destroyItem,
+  setKeyState: actions.controls.setKeyState,
 }, dispatch)
-const mapStateToProps = ({ inventory }) => ({ inventory })
+const mapStateToProps = ({ controls, inventory }) => ({ controls, inventory })
 
 
 
@@ -45,16 +46,6 @@ class Game extends React.Component {
   /***************************************************************************\
     Local Properties
   \***************************************************************************/
-
-  keysPressed = {
-    ' ': false,
-    a: false,
-    control: false,
-    d: false,
-    s: false,
-    shift: false,
-    w: false,
-  }
 
   entities = []
 
@@ -134,11 +125,15 @@ class Game extends React.Component {
   }
 
   _handleKeyup = event => {
-    this.keysPressed[event.key.toLowerCase()] = false
+    const { setKeyState } = this.props
+
+    setKeyState(event.key.toLowerCase(), false)
   }
 
   _handleKeydown = event => {
-    this.keysPressed[event.key.toLowerCase()] = true
+    const { setKeyState } = this.props
+
+    setKeyState(event.key.toLowerCase(), true)
   }
 
   _render = () => {
@@ -146,6 +141,7 @@ class Game extends React.Component {
       x: playerX,
       y: playerY,
     } = this.playerEntity.body.position
+    const { controls } = this.props
     const {
       height,
       width,
@@ -156,29 +152,29 @@ class Game extends React.Component {
     } = this.playerEntity.size
     const velocity = {
       x: 0,
-      xy: 0,
+      y: 0,
     }
     let velocityMultiplier = 0.25
 
-    if (this.keysPressed['shift']) {
+    if (controls['shift']) {
       velocityMultiplier = 0.6
     }
 
-    if (this.keysPressed['control']) {
+    if (controls['control']) {
       velocityMultiplier = 0.1
     }
 
-    velocity.x = ((+this.keysPressed['d']) - (+this.keysPressed['a'])) * velocityMultiplier
-    velocity.y = ((+this.keysPressed['s']) - (+this.keysPressed['w'])) * velocityMultiplier
+    velocity.x = ((+controls['d']) - (+controls['a'])) * velocityMultiplier
+    velocity.y = ((+controls['s']) - (+controls['w'])) * velocityMultiplier
 
     if (velocity.x !== 0) {
       this.playerEntity.direction = (velocity.x > 0) ? 'right' : 'left'
     }
 
-    const playerIsPushingAgainstBottomOfMap = (playerY >= ((height * 2) - playerHeight)) && this.keysPressed['s']
-    const playerIsPushingAgainstLeftOfMap = (playerX <= 0) && this.keysPressed['a']
-    const playerIsPushingAgainstRightOfMap = (playerX >= ((width * 2) - playerWidth)) && this.keysPressed['d']
-    const playerIsPushingAgainstTopOfMap = (playerY <= 0) && this.keysPressed['w']
+    const playerIsPushingAgainstBottomOfMap = (playerY >= ((height * 2) - playerHeight)) && controls['s']
+    const playerIsPushingAgainstLeftOfMap = (playerX <= 0) && controls['a']
+    const playerIsPushingAgainstRightOfMap = (playerX >= ((width * 2) - playerWidth)) && controls['d']
+    const playerIsPushingAgainstTopOfMap = (playerY <= 0) && controls['w']
 
     const playerIsMovingIntoEntityOnBottom = this.playerEntity.contact.bottom && (velocity.y > 0)
     const playerIsMovingIntoEntityOnLeft = this.playerEntity.contact.left && (velocity.x < 0)
@@ -193,7 +189,7 @@ class Game extends React.Component {
       velocity.y = 0
     }
 
-    if (this.keysPressed[' ']) {
+    if (controls[' ']) {
       console.log('Attack!')
     }
 

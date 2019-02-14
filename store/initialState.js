@@ -1,4 +1,14 @@
 const initialState = {
+  controls: {
+    ' ': false,
+    a: false,
+    control: false,
+    d: false,
+    s: false,
+    shift: false,
+    w: false,
+  },
+
   inventory: {
     items: new Array(16),
     totalQuantity: 0,
