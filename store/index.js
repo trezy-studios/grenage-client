@@ -24,7 +24,7 @@ import { isBrowser } from '../helpers'
 const initStore = (initialState = defaultState) => {
   let reduxComposition = null
 
-  if (isBrowser()) {
+  if (false /*isBrowser()*/) {
     const reductionWorker = new (require('./redux.worker.js'))
 
     reduxComposition = composeWithDevTools(
