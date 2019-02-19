@@ -9,12 +9,16 @@ const initialState = {
     w: false,
   },
 
+  entities: {},
+
   inventory: {
     items: new Array(16),
     totalQuantity: 0,
     totalSlots: 16,
     totalWeight: 0,
   },
+
+  playerEntity: null,
 
   ui: {
     inventory: {

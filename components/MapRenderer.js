@@ -83,7 +83,11 @@ class MapRenderer extends React.Component {
   }
 
   static _getContext (canvas) {
-    return canvas.getContext('2d', { alpha: false })
+    if (canvas) {
+      return canvas.getContext('2d', { alpha: false })
+    }
+
+    return null
   }
 
   _render = () => {
@@ -146,6 +150,10 @@ class MapRenderer extends React.Component {
 
   componentDidMount () {
     this._start()
+  }
+
+  componentWillUnmount () {
+    rafael.unschedule('map::render')
   }
 
   constructor (props) {

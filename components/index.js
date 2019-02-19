@@ -1,4 +1,5 @@
 export * from './AppLayout'
+export * from './EntitiesRenderer'
 export * from './FPSMeter'
 export * from './Game'
 export * from './Icon'

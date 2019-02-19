@@ -1,7 +1,6 @@
 // Module imports
 import {
   Body,
-  Composite,
   Engine,
   Events,
   World,
@@ -17,13 +16,13 @@ import React from 'react'
 
 
 // Local imports
-import {
-  Entity,
-  Map,
-} from '../GameComponents'
+import { Entity } from '../GameComponents'
 import { actions } from '../store'
 import { isBrowser } from '../helpers'
-import { MapRenderer } from '../components'
+import {
+  EntitiesRenderer,
+  MapRenderer,
+} from '../components'
 
 
 
@@ -31,11 +30,22 @@ import { MapRenderer } from '../components'
 
 // Local constants
 const mapDispatchToProps = dispatch => bindActionCreators({
+  addEntity: actions.entities.addEntity,
   addItem: actions.inventory.addItem,
   destroyItem: actions.inventory.destroyItem,
   setKeyState: actions.controls.setKeyState,
 }, dispatch)
-const mapStateToProps = ({ controls, inventory }) => ({ controls, inventory })
+const mapStateToProps = ({
+  controls,
+  entities,
+  playerEntity,
+  inventory,
+}) => ({
+  controls,
+  entities,
+  playerEntity,
+  inventory,
+})
 
 
 
@@ -46,8 +56,6 @@ class Game extends React.Component {
   /***************************************************************************\
     Local Properties
   \***************************************************************************/
-
-  entities = []
 
   map = undefined
 
@@ -76,32 +84,15 @@ class Game extends React.Component {
     Events.on(this.engine, 'collisionEnd', event => this._handleCollisionEvent(false, event))
   }
 
-  _generateMap () {
-    this.map = new Map({
-      type: 'Hometown',
-    })
-  }
+  _createPlayer () {
+    const { addEntity } = this.props
 
-  _generateInitialBodies () {
-    const player = new Entity({
+    addEntity({
+      isPlayer: true,
       initialPosition: this.center,
-      label: 'player',
       size: 32,
       type: 'knight',
     })
-
-    this.playerEntity = player
-
-    this.entities.push(player)
-    this.entities.push(new Entity({
-      initialPosition: {
-        ...this.center,
-        x: this.center.x - 50,
-      },
-      label: 'Gelatinous Cube',
-      size: 32,
-      type: 'knight',
-    }))
   }
 
   _handleCollisionEvent = (isStarting, { pairs }) => {
@@ -138,76 +129,77 @@ class Game extends React.Component {
 
   _render = () => {
     const {
-      x: playerX,
-      y: playerY,
-    } = this.playerEntity.body.position
-    const { controls } = this.props
-    const {
-      height,
-      width,
-    } = this.state
-    const {
-      x: playerWidth,
-      y: playerHeight,
-    } = this.playerEntity.size
-    const velocity = {
-      x: 0,
-      y: 0,
+      controls,
+      entities,
+      playerEntity,
+    } = this.props
+
+    World.add(this.engine.world, Object.values(entities).filter(entity => !this.engine.world.bodies.includes(entity)))
+
+    if (playerEntity) {
+      const {
+        height,
+        width,
+      } = this.state
+      const {
+        x: playerX,
+        y: playerY,
+      } = playerEntity.position
+      const {
+        x: playerWidth,
+        y: playerHeight,
+      } = playerEntity.render.size
+      const velocity = {
+        x: 0,
+        y: 0,
+      }
+
+      let velocityMultiplier = playerEntity.render.velocityMultipliers.walk
+
+      if (controls['shift']) {
+        velocityMultiplier = playerEntity.render.velocityMultipliers.run
+      }
+
+      if (controls['control']) {
+        velocityMultiplier = playerEntity.render.velocityMultipliers.sneak
+      }
+
+      velocity.x = ((+controls['d']) - (+controls['a'])) * velocityMultiplier
+      velocity.y = ((+controls['s']) - (+controls['w'])) * velocityMultiplier
+
+      const playerIsPushingAgainstBottomOfMap = (playerY >= ((height * 2) - playerHeight)) && controls['s']
+      const playerIsPushingAgainstLeftOfMap = (playerX <= 0) && controls['a']
+      const playerIsPushingAgainstRightOfMap = (playerX >= ((width * 2) - playerWidth)) && controls['d']
+      const playerIsPushingAgainstTopOfMap = (playerY <= 0) && controls['w']
+
+      const playerIsMovingIntoEntityOnBottom = playerEntity.render.contact.bottom && (velocity.y > 0)
+      const playerIsMovingIntoEntityOnLeft = playerEntity.render.contact.left && (velocity.x < 0)
+      const playerIsMovingIntoEntityOnRight = playerEntity.render.contact.right && (velocity.x > 0)
+      const playerIsMovingIntoEntityOnTop = playerEntity.render.contact.top && (velocity.y < 0)
+
+      if (playerIsPushingAgainstLeftOfMap || playerIsPushingAgainstRightOfMap || playerIsMovingIntoEntityOnLeft || playerIsMovingIntoEntityOnRight) {
+        velocity.x = 0
+      }
+
+      if (playerIsPushingAgainstBottomOfMap || playerIsPushingAgainstTopOfMap || playerIsMovingIntoEntityOnBottom || playerIsMovingIntoEntityOnTop) {
+        velocity.y = 0
+      }
+
+      // if (controls[' ']) {
+      //   console.log('Attack!')
+      // }
+
+      Body.setVelocity(playerEntity, velocity)
+
+      Engine.update(this.engine)
     }
-    let velocityMultiplier = 0.25
-
-    if (controls['shift']) {
-      velocityMultiplier = 0.6
-    }
-
-    if (controls['control']) {
-      velocityMultiplier = 0.1
-    }
-
-    velocity.x = ((+controls['d']) - (+controls['a'])) * velocityMultiplier
-    velocity.y = ((+controls['s']) - (+controls['w'])) * velocityMultiplier
-
-    if (velocity.x !== 0) {
-      this.playerEntity.direction = (velocity.x > 0) ? 'right' : 'left'
-    }
-
-    const playerIsPushingAgainstBottomOfMap = (playerY >= ((height * 2) - playerHeight)) && controls['s']
-    const playerIsPushingAgainstLeftOfMap = (playerX <= 0) && controls['a']
-    const playerIsPushingAgainstRightOfMap = (playerX >= ((width * 2) - playerWidth)) && controls['d']
-    const playerIsPushingAgainstTopOfMap = (playerY <= 0) && controls['w']
-
-    const playerIsMovingIntoEntityOnBottom = this.playerEntity.contact.bottom && (velocity.y > 0)
-    const playerIsMovingIntoEntityOnLeft = this.playerEntity.contact.left && (velocity.x < 0)
-    const playerIsMovingIntoEntityOnRight = this.playerEntity.contact.right && (velocity.x > 0)
-    const playerIsMovingIntoEntityOnTop = this.playerEntity.contact.top && (velocity.y < 0)
-
-    if (playerIsPushingAgainstLeftOfMap || playerIsPushingAgainstRightOfMap || playerIsMovingIntoEntityOnLeft || playerIsMovingIntoEntityOnRight) {
-      velocity.x = 0
-    }
-
-    if (playerIsPushingAgainstBottomOfMap || playerIsPushingAgainstTopOfMap || playerIsMovingIntoEntityOnBottom || playerIsMovingIntoEntityOnTop) {
-      velocity.y = 0
-    }
-
-    if (controls[' ']) {
-      console.log('Attack!')
-    }
-
-    Body.setVelocity(this.playerEntity.body, velocity)
-
-    Engine.update(this.engine)
-
-    this.forceUpdate()
   }
 
   _start = async () => {
     await this._updateSize()
-    this._generateMap()
-    this._generateInitialBodies()
+    this._createPlayer()
 
     this.engine.world.gravity.y = 0
-
-    World.add(this.engine.world, this.bodies)
 
     Engine.run(this.engine)
 
@@ -225,8 +217,8 @@ class Game extends React.Component {
         } = this.mainElement.current
 
         this.setState({
-          height: offsetHeight,
-          width: offsetWidth,
+          height: offsetHeight / 3,
+          width: offsetWidth / 3,
         }, resolve)
       }
     })
@@ -253,38 +245,36 @@ class Game extends React.Component {
   }
 
   render () {
+    const { playerEntity } = this.props
     const {
       height,
       width,
     } = this.state
 
-    let viewX = 0
-    let viewY = 0
+    let offsetX = 0
+    let offsetY = 0
 
-    if (this.playerEntity) {
+    if (playerEntity) {
       const {
         x: playerX,
         y: playerY,
-      } = this.playerEntity.body.position
+      } = playerEntity.position
 
-      viewX = playerX - (width / 2)
-      viewY = playerY - (height / 2)
+      offsetX = playerX - (width / 2)
+      offsetY = playerY - (height / 2)
 
-      if (viewX <= 0) {
-        viewX = 0
-      } else if (viewX >= width) {
-        viewX = width
+      if (offsetX <= 0) {
+        offsetX = 0
+      } else if (offsetX >= width) {
+        offsetX = width
       }
 
-      if (viewY <= 0) {
-        viewY = 0
-      } else if (viewY >= height) {
-        viewY = height
+      if (offsetY <= 0) {
+        offsetY = 0
+      } else if (offsetY >= height) {
+        offsetY = height
       }
     }
-
-    let offsetX = viewX
-    let offsetY = viewY
 
     return (
       <main
@@ -299,93 +289,13 @@ class Game extends React.Component {
           rafael={this.rafael}
           width={width} />
 
-        {/* <canvas id="game-entities" /> */}
-
-        <svg
+        <EntitiesRenderer
           height={height}
-          ref={this.svgElement}
-          version="1.2"
-          viewBox={`${viewX} ${viewY} ${width} ${height}`}
-          width={width}>
-
-          <g id="game-entities">
-            {Composite.allBodies(this.engine.world).map(body => {
-              return body.parts.map(bodyPart => {
-                if (bodyPart === body) {
-                  return (
-                    <text
-                      dy="-3em"
-                      key={bodyPart.id}
-                      style={{
-                        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                        fontSize: '6px',
-                      }}
-                      textAnchor="middle"
-                      x={bodyPart.position.x}
-                      y={bodyPart.position.y}>
-                      {bodyPart.label}
-                    </text>
-                  )
-                }
-
-                const { vertices } = bodyPart
-                let path = ''
-
-                for (const vertex of bodyPart.vertices) {
-                  if (!path) {
-                    path += `M${vertex.x},${vertex.y}`
-                  } else {
-                    path += `L${vertex.x},${vertex.y}`
-                  }
-                }
-
-                path += 'Z'
-
-                return (
-                  <path
-                    d={path}
-                    fill={bodyPart.isSensor ? 'pink' : 'purple'}
-                    key={bodyPart.id} />
-                )
-              })
-
-              // const maskID = `sprite-mask-${id}`
-
-              // if (!entity.imageData) {
-              //   return null
-              // }
-
-              // const {
-              //   x: imageX,
-              //   y: imageY,
-              // } = entity.currentFrame.frame
-
-              // return (
-              //   <g
-              //     key={id}
-              //     transform={[
-              //       `translate(${Math.floor(position.x + ((entity.direction === 'left') ? entity.size.x : 0))}, ${Math.floor(position.y)})`,
-              //       `scale(${(entity.direction === 'left') ? -1 : 1}, 1)`
-              //     ].join(', ')}>
-              //     <mask id={maskID}>
-              //       <rect
-              //         fill="white"
-              //         height={entity.size.y}
-              //         transform={`translate(${imageX}, ${imageY})`}
-              //         width={entity.size.x} />
-              //     </mask>
-
-              //     <image
-              //       height={entity.imageData.meta.size.h}
-              //       mask={`url(#${maskID})`}
-              //       transform={`translate(${-imageX}, ${imageY})`}
-              //       width={entity.imageData.meta.size.w}
-              //       xlinkHref={entity.imageURL} />
-              //   </g>
-              // )
-            })}
-          </g>
-        </svg>
+          offsetX={offsetX}
+          offsetY={offsetY}
+          rafael={this.rafael}
+          width={width}
+          world={this.engine.world} />
       </main>
     )
   }
@@ -397,10 +307,6 @@ class Game extends React.Component {
   /***************************************************************************\
     Getters
   \***************************************************************************/
-
-  get bodies () {
-    return this.entities.map(({ body }) => body)
-  }
 
   get center () {
     return {

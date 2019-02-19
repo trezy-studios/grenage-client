@@ -14,6 +14,7 @@ import {
   Inventory,
 } from '../components'
 import {
+  SpritesDebugPanel,
   StatsDebugPanel,
   InventoryDebugPanel,
 } from '../components/DebugPanels'
@@ -53,6 +54,10 @@ class Home extends React.Component {
 
         {query.debug && (
           <InventoryDebugPanel />
+        )}
+
+        {query.debug && (
+          <SpritesDebugPanel />
         )}
       </React.Fragment>
     )
