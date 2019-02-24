@@ -1,6 +1,6 @@
 // Local imports
 import actionTypes from '../actionTypes'
-import { createEntity } from '../../GameComponents'
+import { Entity } from '../../GameComponents'
 
 
 
@@ -14,7 +14,7 @@ const addEntity = entityData => async dispatch => {
     type,
   } = entityData
 
-  const entity = await createEntity({
+  const entity = new Entity({
     initialPosition,
     label: (isPlayer ? 'player' : type),
     size: size || 32,

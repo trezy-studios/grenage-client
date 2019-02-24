@@ -24,7 +24,7 @@ export default function (state = initialState.entities, action) {
     case actionTypes.ADD_ENTITY:
       return {
         ...state,
-        [payload.entity.render.id]: payload.entity,
+        [payload.entity.id]: payload.entity,
       }
 
     default:
