@@ -102,26 +102,32 @@ class Game extends React.Component {
       x: 0,
       y: 0,
     }
+    const mapSize = this.map.size
 
     if (playerEntity) {
       const {
         x: playerX,
         y: playerY,
       } = playerEntity.body.position
+      const halfHeight = height / 2
+      const halfWidth = width / 2
 
-      offset.x = playerX - (width / 2)
-      offset.y = playerY - (height / 2)
+      offset.x = playerX - halfHeight
+      offset.y = playerY - halfWidth
+
+      const eastViewBoundary = mapSize.x - width
+      const southViewBoundary = mapSize.y - height
 
       if (offset.x <= 0) {
         offset.x = 0
-      } else if (offset.x >= width) {
-        offset.x = width
+      } else if (offset.x >= eastViewBoundary) {
+        offset.x = eastViewBoundary
       }
 
       if (offset.y <= 0) {
         offset.y = 0
-      } else if (offset.y >= height) {
-        offset.y = height
+      } else if (offset.y >= southViewBoundary) {
+        offset.y = southViewBoundary
       }
     }
 
@@ -137,6 +143,7 @@ class Game extends React.Component {
       x: 0,
       y: 0,
     }
+    const mapSize = this.map.size
 
     if (playerEntity) {
       const {
@@ -166,10 +173,10 @@ class Game extends React.Component {
       velocity.x = ((+controls['d']) - (+controls['a'])) * velocityMultiplier
       velocity.y = ((+controls['s']) - (+controls['w'])) * velocityMultiplier
 
-      const playerIsPushingAgainstBottomOfMap = (playerY >= ((height * 2) - playerHeight)) && controls['s']
-      const playerIsPushingAgainstLeftOfMap = (playerX <= 0) && controls['a']
-      const playerIsPushingAgainstRightOfMap = (playerX >= ((width * 2) - playerWidth)) && controls['d']
-      const playerIsPushingAgainstTopOfMap = (playerY <= 0) && controls['w']
+      const playerIsPushingAgainstBottomOfMap = (playerY >= (mapSize.y - (playerWidth / 2))) && controls['s']
+      const playerIsPushingAgainstLeftOfMap = (playerX <= 0 + (playerWidth / 2)) && controls['a']
+      const playerIsPushingAgainstRightOfMap = (playerX >= (mapSize.x - (playerWidth / 2))) && controls['d']
+      const playerIsPushingAgainstTopOfMap = (playerY <= 0 + (playerWidth / 2)) && controls['w']
 
       const playerIsMovingIntoEntityOnBottom = playerBody.render.contact.bottom && (velocity.y > 0)
       const playerIsMovingIntoEntityOnLeft = playerBody.render.contact.left && (velocity.x < 0)
@@ -326,6 +333,14 @@ class Game extends React.Component {
     } = this.state
 
     context.drawImage(map.offscreenCanvas, Math.round(offset.x), Math.round(offset.y), width, height, 0, 0, width, height)
+
+    // View bounding box
+    const halfHeight = height / 2
+    const halfWidth = width / 2
+
+    context.beginPath()
+    context.strokeStyle = 'black'
+    context.strokeRect(Math.round(halfWidth - offset.x), Math.round(halfHeight - offset.y), (map.size.x - width), (map.size.y - height))
   }
 
   _start = async () => {

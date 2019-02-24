@@ -24,7 +24,10 @@ class Map {
 
   options = undefined
 
-  tilesetData = undefined
+  size = {
+    x: 0,
+    y: 0,
+  }
 
 
 
@@ -39,19 +42,11 @@ class Map {
   }
 
   initialize = async () => {
-    const tilesetPromises = []
     const mapData = await fetch(`${this.baseURL}/${this.options.mapName}.json`).then(response => response.json())
-
-    for (const { source } of mapData.tilesets) {
-      const promise = fetch(`${this.baseURL}/${source.replace(/\.tsx$/g, '.json')}`).then(response => response.json())
-      tilesetPromises.push(promise)
-    }
-
-    this.tilesetData = await Promise.all(tilesetPromises)
 
     const imageLoadPromises = []
 
-    for (const tilesetDatum of this.tilesetData) {
+    for (const tilesetDatum of mapData.tilesets) {
       const imageURL = `${this.baseURL}/${tilesetDatum.image}`
       const image = document.createElement('img')
 
@@ -74,7 +69,7 @@ class Map {
       tilewidth,
       width,
     } = mapData
-    const fullMapSize = layers.reduce((accumulator, layer) => {
+    this.size = layers.reduce((accumulator, layer) => {
       if (layer.type === 'tilelayer') {
         accumulator.x = Math.max(accumulator.x, layer.width)
         accumulator.y = Math.max(accumulator.y, layer.height)
@@ -85,16 +80,20 @@ class Map {
       x: 0,
       y: 0,
     })
+    this.size.x = this.size.x * tilewidth
+    this.size.y = this.size.y * tileheight
     const anchorPoint = {
-      x: (fullMapSize.x / 2) * tilewidth,
-      y: (fullMapSize.y / 2) * tileheight,
+      x: this.size.x / 2,
+      y: this.size.y / 2,
     }
 
-    this.offscreenCanvas.setAttribute('height', fullMapSize.y * tileheight)
-    this.offscreenCanvas.setAttribute('width', fullMapSize.x * tilewidth)
+    console.log('map size', this.size)
+
+    this.offscreenCanvas.setAttribute('height', this.size.y)
+    this.offscreenCanvas.setAttribute('width', this.size.x)
 
     context.fillStyle = backgroundcolor
-    context.fillRect(0, 0, fullMapSize.x * tilewidth, fullMapSize.y * tileheight)
+    context.fillRect(0, 0, this.size.x, this.size.y)
 
     for (const layer of layers) {
       if (layer.type === 'tilelayer') {
@@ -108,7 +107,7 @@ class Map {
           const chunkOffsetY = anchorPoint.x - (~(chunk.y * tileheight) + 1)
 
           for (const [index, tileID] of Object.entries(chunk.data)) {
-            const tileset = this.tilesetData[0]
+            const tileset = mapData.tilesets[0]
             const tile = tileset.tiles[tileID]
             const destinationX = (tilewidth * (index % chunk.width)) + chunkOffsetX
             const destinationY = (Math.floor(index / chunk.width) * tileheight) + chunkOffsetY
