@@ -1,0 +1,59 @@
+.game-debugger {
+  background-color: black;
+  display: flex;
+  flex-direction: column;
+  font-family: sans-serif;
+  min-height: 20vh;
+  overflow: auto;
+  // padding: 2rem;
+
+  &:empty {
+    display: none;
+  }
+
+  [role=tablist] {
+    display: flex;
+
+    [role=tab] {
+      cursor: pointer;
+      padding: 0.5rem 1rem;
+      position: relative;
+      transition-duration: 0.2s;
+      transition-property: background-color;
+
+      &:after {
+        background-color: white;
+        bottom: 0;
+        content: '';
+        display: block;
+        height: 0.1rem;
+        left: 0;
+        margin: 0 auto;
+        position: absolute;
+        right: 0;
+        transition-duration: 0.2s;
+        transition-property: width;
+        width: 0;
+      }
+
+      &:hover,
+      &[aria-selected=true] {
+        &:after {
+          width: 100%;
+        }
+      }
+
+      &:hover {
+        background-color: rgba(white, 0.1);
+      }
+
+      &[aria-selected=true] {
+        background-color: rgba(white, 0.2);
+      }
+    }
+  }
+
+  > details:not(:last-child) {
+    margin-bottom: 2rem;
+  }
+}

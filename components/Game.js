@@ -35,11 +35,13 @@ const mapDispatchToProps = dispatch => bindActionCreators({
 }, dispatch)
 const mapStateToProps = ({
   controls,
+  debug,
   entities,
   playerEntity,
   inventory,
 }) => ({
   controls,
+  debug,
   entities,
   playerEntity,
   inventory,
@@ -282,6 +284,11 @@ class Game extends React.Component {
 
   _renderEntity = (entity, offset, context) => {
     const {
+      wireframesShowEntityAnchorPoints,
+      wireframesShowEntityBoundingBox,
+    } = this.props.debug
+
+    const {
       frame: {
         h: sourceHeight,
         w: sourceWidth,
@@ -313,20 +320,25 @@ class Game extends React.Component {
       )
       context.restore()
 
-      // Sprite anchor point
-      context.beginPath()
-      context.arc((renderableBody.position.x - offset.x), (renderableBody.position.y - offset.y), 2, 0, 2 * Math.PI)
-      context.fillStyle = 'red'
-      context.fill()
+      if (wireframesShowEntityAnchorPoints) {
+        // Sprite anchor point
+        context.beginPath()
+        context.arc((renderableBody.position.x - offset.x), (renderableBody.position.y - offset.y), 2, 0, 2 * Math.PI)
+        context.fillStyle = 'red'
+        context.fill()
+      }
 
-      // Sprite bounding box
-      context.beginPath()
-      context.strokeStyle = 'black'
-      context.strokeRect(destinationX, destinationY, sourceWidth, sourceHeight)
+      if (wireframesShowEntityBoundingBox) {
+        // Sprite bounding box
+        context.beginPath()
+        context.strokeStyle = 'black'
+        context.strokeRect(destinationX, destinationY, sourceWidth, sourceHeight)
+      }
     }
   }
 
   _renderMap = (map, offset, context) => {
+    const { wireframesShowMapViewBoundingBox } = this.props.debug
     const {
       height,
       width,
@@ -334,13 +346,15 @@ class Game extends React.Component {
 
     context.drawImage(map.offscreenCanvas, Math.round(offset.x), Math.round(offset.y), width, height, 0, 0, width, height)
 
-    // View bounding box
-    const halfHeight = height / 2
-    const halfWidth = width / 2
+    if (wireframesShowMapViewBoundingBox) {
+      // View bounding box
+      const halfHeight = height / 2
+      const halfWidth = width / 2
 
-    context.beginPath()
-    context.strokeStyle = 'black'
-    context.strokeRect(Math.round(halfWidth - offset.x), Math.round(halfHeight - offset.y), (map.size.x - width), (map.size.y - height))
+      context.beginPath()
+      context.strokeStyle = 'black'
+      context.strokeRect(Math.round(halfWidth - offset.x), Math.round(halfHeight - offset.y), (map.size.x - width), (map.size.y - height))
+    }
   }
 
   _start = async () => {
@@ -407,7 +421,11 @@ class Game extends React.Component {
 
     if (!preloadComplete) {
       return (
-        'Loading...'
+        <main
+          className="game"
+          ref={this.mainElement}>
+          Loading...
+        </main>
       )
     }
 

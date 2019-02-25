@@ -9,7 +9,6 @@ import React from 'react'
 
 // Local imports
 import { actions } from '../../store'
-import { DebugPanel } from '.'
 
 
 
@@ -41,39 +40,39 @@ class InventoryDebugPanel extends React.Component {
     } = this.props
 
     return (
-      <DebugPanel title="Inventory">
-          <button onClick={showInventory}>
-            Open Inventory
-          </button>
+      <React.Fragment>
+        <button onClick={showInventory}>
+          Open Inventory
+        </button>
 
-          <button onClick={() => {
-              addItem({
-                name: 'Log',
-                quantity: 10,
-                weight: 3,
-              })
-            }}>
-            Add 10x Logs
-          </button>
+        <button onClick={() => {
+            addItem({
+              name: 'Log',
+              quantity: 10,
+              weight: 3,
+            })
+          }}>
+          Add 10x Logs
+        </button>
 
-          <button onClick={() => {
-              addItem({
-                name: 'Key',
-                quality: 'Gold',
-              })
-            }}>
-            Add Gold Key
-          </button>
+        <button onClick={() => {
+            addItem({
+              name: 'Key',
+              quality: 'Gold',
+            })
+          }}>
+          Add Gold Key
+        </button>
 
-          <button onClick={() => {
-              addItem({
-                name: 'Key',
-                quality: 'Rusty',
-              })
-            }}>
-            Add Rusty Key
-          </button>
-      </DebugPanel>
+        <button onClick={() => {
+            addItem({
+              name: 'Key',
+              quality: 'Rusty',
+            })
+          }}>
+          Add Rusty Key
+        </button>
+      </React.Fragment>
     )
   }
 }
@@ -83,58 +82,3 @@ class InventoryDebugPanel extends React.Component {
 
 
 export { InventoryDebugPanel }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-const Inventory = () => (
-  <div className="debugger">
-    {/* <button onClick={actions.inventory.showInventory}>
-      Open Inventory
-    </button>
-
-    <button onClick={() => {
-        actions.inventory.addItem({
-          name: 'Log',
-          quantity: 10,
-          weight: 3,
-        })
-      }}>
-      Add 10x Logs
-    </button>
-
-    <button onClick={() => {
-        actions.inventory.addItem({
-          name: 'Key',
-          quality: 'Gold',
-        })
-      }}>
-      Add Gold Key
-    </button>
-
-    <button onClick={() => {
-        actions.inventory.addItem({
-          name: 'Key',
-          quality: 'Rusty',
-        })
-      }}>
-      Add Rusty Key
-    </button> */}
-  </div>
-)
-
-
-
-
-
-export { Inventory }

@@ -87,8 +87,6 @@ class Map {
       y: this.size.y / 2,
     }
 
-    console.log('map size', this.size)
-
     this.offscreenCanvas.setAttribute('height', this.size.y)
     this.offscreenCanvas.setAttribute('width', this.size.x)
 

@@ -9,7 +9,6 @@ import React from 'react'
 
 // Local imports
 import { actions } from '../../store'
-import { DebugPanel } from '.'
 
 
 
@@ -24,38 +23,21 @@ const mapStateToProps = ({ entities }) => ({ entities })
 
 @connect(mapStateToProps)
 class SpritesDebugPanel extends React.Component {
-  componentDidMount () {
-    this.observer = new MutationObserver((mutationsList, observer) => {
-      console.log(mutationsList, observer)
-      this.forceUpdate()
-    })
-  }
-
-  componentDidUpdate (previousProps) {
-    if (previousProps.entities !== this.props.entities) {
-      this.observer.disconnect()
-
-      for (const entity of Object.values(this.props.entities)) {
-        this.observer.observe(entity.render.image, { attributes: true })
-      }
-    }
-  }
-
   render () {
     const { entities } = this.props
 
     return (
-      <DebugPanel title="Sprites">
+      <React.Fragment>
         <ul>
           {Object.values(entities).map(entity => (
             <li key={entity.id}>
-              <header>{entity.label}</header>
+              <header>{entity.body.label}</header>
 
-              <img src={entity.render.imageURL} />
+              <img src={entity.body.render.image.src} />
             </li>
           ))}
         </ul>
-      </DebugPanel>
+      </React.Fragment>
     )
   }
 }

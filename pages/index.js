@@ -11,13 +11,9 @@ import React from 'react'
 import { actions } from '../store'
 import {
   Game,
+  GameDebugger,
   Inventory,
 } from '../components'
-import {
-  SpritesDebugPanel,
-  StatsDebugPanel,
-  InventoryDebugPanel,
-} from '../components/DebugPanels'
 
 
 
@@ -49,15 +45,7 @@ class Home extends React.Component {
         <Inventory open={ui.inventory.isVisible} />
 
         {query.debug && (
-          <StatsDebugPanel />
-        )}
-
-        {query.debug && (
-          <InventoryDebugPanel />
-        )}
-
-        {query.debug && (
-          <SpritesDebugPanel />
+          <GameDebugger query={query} />
         )}
       </React.Fragment>
     )

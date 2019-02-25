@@ -9,6 +9,12 @@ const initialState = {
     w: false,
   },
 
+  debug: {
+    wireframesShowEntityAnchorPoints: false,
+    wireframesShowEntityBoundingBox: false,
+    wireframesShowMapViewBoundingBox: false,
+  },
+
   entities: {},
 
   inventory: {
