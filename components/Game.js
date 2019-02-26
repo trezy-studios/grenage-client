@@ -114,19 +114,19 @@ class Game extends React.Component {
       const halfHeight = height / 2
       const halfWidth = width / 2
 
-      offset.x = playerX - halfHeight
-      offset.y = playerY - halfWidth
+      offset.x = playerX - halfWidth
+      offset.y = playerY - halfHeight
 
       const eastViewBoundary = mapSize.x - width
       const southViewBoundary = mapSize.y - height
 
-      if (offset.x <= 0) {
+      if (offset.x < 0) {
         offset.x = 0
       } else if (offset.x >= eastViewBoundary) {
         offset.x = eastViewBoundary
       }
 
-      if (offset.y <= 0) {
+      if (offset.y < 0) {
         offset.y = 0
       } else if (offset.y >= southViewBoundary) {
         offset.y = southViewBoundary
