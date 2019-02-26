@@ -10,6 +10,7 @@ import uuid from 'uuid/v4'
 
 // Local imports
 import { actions } from '../../store'
+import { Switch } from '..'
 
 
 
@@ -72,12 +73,11 @@ class WireframesDebugPanel extends React.Component {
       <React.Fragment>
         {inputs.map(({ id, label, property }) => (
           <fieldset key={id}>
-            <input
+            <Switch
               checked={this.props[property]}
               id={`debugger-${property}`}
               name={property}
-              onChange={this._handleInputChange}
-              type="checkbox" />
+              onChange={this._handleInputChange} />
 
             <label htmlFor={`debugger-${property}`}>
               {label}
