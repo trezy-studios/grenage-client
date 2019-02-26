@@ -67,6 +67,11 @@ class WireframesDebugPanel extends React.Component {
         label: 'Show view bounding box',
         property: 'wireframesShowMapViewBoundingBox',
       },
+      {
+        id: uuid(),
+        label: 'Show all bodies',
+        property: 'showAllBodies',
+      },
     ]
 
     return (

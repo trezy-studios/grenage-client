@@ -1,6 +1,7 @@
 // Module imports
 import {
   Body,
+  Composite,
   Engine,
   Events,
   World,
@@ -85,10 +86,11 @@ class Game extends React.Component {
 
   _createPlayer () {
     const { addEntity } = this.props
+    const playerSpawnPoint = this.map.points.find(point => point.type === 'spawn::player')
 
     addEntity({
       isPlayer: true,
-      initialPosition: this.center,
+      initialPosition: playerSpawnPoint,
       size: 32,
       type: 'knight',
     })
@@ -198,23 +200,23 @@ class Game extends React.Component {
   }
 
   _handleCollisionEvent = (isStarting, { pairs }) => {
-    for (const pair of pairs) {
-      const {
-        bodyA,
-        bodyB,
-        isSensor,
-      } = pair
+    // for (const pair of pairs) {
+    //   const {
+    //     bodyA,
+    //     bodyB,
+    //     isSensor,
+    //   } = pair
 
-      if (isSensor && (bodyA.parent !== bodyB.parent)) {
-        if (['bottom', 'left', 'right', 'top'].includes(bodyA.label)) {
-          bodyA.parent.entity.contact[bodyA.label] = isStarting
-        }
+    //   if (isSensor && (bodyA.parent !== bodyB.parent)) {
+    //     if (['bottom', 'left', 'right', 'top'].includes(bodyA.label)) {
+    //       bodyA.parent.entity.contact[bodyA.label] = isStarting
+    //     }
 
-        if (['bottom', 'left', 'right', 'top'].includes(bodyB.label)) {
-          bodyB.parent.entity.contact[bodyB.label] = isStarting
-        }
-      }
-    }
+    //     if (['bottom', 'left', 'right', 'top'].includes(bodyB.label)) {
+    //       bodyB.parent.entity.contact[bodyB.label] = isStarting
+    //     }
+    //   }
+    // }
   }
 
   _handleKeyup = event => {
@@ -243,6 +245,7 @@ class Game extends React.Component {
   _render = () => {
     const {
       controls,
+      debug,
       entities,
       playerEntity,
     } = this.props
@@ -278,6 +281,20 @@ class Game extends React.Component {
     for (const entity of Object.values(entities)) {
       if (entity.body.render.imageDownloadComplete) {
         this._renderEntity(entity, offset, context)
+      }
+    }
+
+    if (debug.showAllBodies) {
+      console.log(Composite.allBodies(this.engine.world))
+      for (const body of Composite.allBodies(this.engine.world)) {
+        const bodyHeight = body.bounds.max.y - body.bounds.min.y
+        const bodyWidth = body.bounds.max.x - body.bounds.min.x
+
+        const bodyX = (body.position.x - (bodyWidth / 2)) - offset.x
+        const bodyY = (body.position.y - (bodyHeight / 2)) - offset.y
+
+        context.fillStyle = 'rgba(0, 0, 0, 0.3)'
+        context.fillRect(bodyX, bodyY, bodyWidth, bodyHeight)
       }
     }
   }
@@ -365,6 +382,7 @@ class Game extends React.Component {
 
     this.engine.world.gravity.y = 0
 
+    World.add(this.engine.world, this.map.bodies)
     Engine.run(this.engine)
 
     window.matterEngine = this.engine

@@ -1,8 +1,8 @@
 // Module imports
-// import {
-//   Bodies,
-//   Body,
-// } from 'matter-js'
+import {
+  Bodies,
+  Composite,
+} from 'matter-js'
 // import uuid from 'uuid/v4'
 
 
@@ -14,7 +14,14 @@ class Map {
     Local Properties
   \***************************************************************************/
 
+  anchorPoint = {
+    x: 0,
+    y: 0,
+  }
+
   baseURL = '/static/maps'
+
+  bodies = undefined
 
   isReady = false
 
@@ -23,6 +30,8 @@ class Map {
   offscreenCanvas = document.createElement('canvas')
 
   options = undefined
+
+  points = []
 
   size = {
     x: 0,
@@ -42,9 +51,10 @@ class Map {
   }
 
   initialize = async () => {
-    const mapData = await fetch(`${this.baseURL}/${this.options.mapName}.json`).then(response => response.json())
-
+    const context = this.offscreenCanvas.getContext('2d', { alpha: false })
     const imageLoadPromises = []
+
+    const mapData = await fetch(`${this.baseURL}/${this.options.mapName}.json`).then(response => response.json())
 
     for (const tilesetDatum of mapData.tilesets) {
       const imageURL = `${this.baseURL}/${tilesetDatum.image}`
@@ -59,8 +69,6 @@ class Map {
 
     await Promise.all(imageLoadPromises)
 
-    const context = this.offscreenCanvas.getContext('2d', { alpha: false })
-
     const {
       backgroundcolor,
       height,
@@ -69,20 +77,20 @@ class Map {
       tilewidth,
       width,
     } = mapData
-    this.size = layers.reduce((accumulator, layer) => {
-      if (layer.type === 'tilelayer') {
-        accumulator.x = Math.max(accumulator.x, layer.width)
-        accumulator.y = Math.max(accumulator.y, layer.height)
-      }
 
-      return accumulator
-    }, {
-      x: 0,
-      y: 0,
-    })
-    this.size.x = this.size.x * tilewidth
-    this.size.y = this.size.y * tileheight
-    const anchorPoint = {
+    for (const layer of layers.filter(({ type }) => type === 'tilelayer')) {
+      this.size = {
+        x: Math.max(this.size.x, layer.width),
+        y: Math.max(this.size.y, layer.height),
+      }
+    }
+
+    this.size = {
+      x: this.size.x * tilewidth,
+      y: this.size.y * tileheight,
+    }
+
+    this.anchorPoint = {
       x: this.size.x / 2,
       y: this.size.y / 2,
     }
@@ -93,29 +101,64 @@ class Map {
     context.fillStyle = backgroundcolor
     context.fillRect(0, 0, this.size.x, this.size.y)
 
+    this.bodies = Composite.create({ label: `map::${this.options.mapName}` })
+
     for (const layer of layers) {
-      if (layer.type === 'tilelayer') {
-        const {
-          startx,
-          starty,
-        } = layer
+      switch (layer.type) {
+        case 'objectgroup':
+          for (const object of layer.objects) {
+            object.x = object.x + this.anchorPoint.x
+            object.y = object.y + this.anchorPoint.y
 
-        for (const chunk of layer.chunks) {
-          const chunkOffsetX = anchorPoint.x - (~(chunk.x * tilewidth) + 1)
-          const chunkOffsetY = anchorPoint.x - (~(chunk.y * tileheight) + 1)
-
-          for (const [index, tileID] of Object.entries(chunk.data)) {
-            const tileset = mapData.tilesets[0]
-            const tile = tileset.tiles[tileID]
-            const destinationX = (tilewidth * (index % chunk.width)) + chunkOffsetX
-            const destinationY = (Math.floor(index / chunk.width) * tileheight) + chunkOffsetY
-
-            const sourceX = (tileset.tilewidth * ((tileID - 1) % tileset.columns))
-            const sourceY = Math.floor((tileID - 1) / tileset.columns) * tileset.tileheight
-
-            context.drawImage(tileset.image, sourceX, sourceY, tilewidth, tileheight, destinationX, destinationY, tilewidth, tileheight)
+            if (object.point) {
+              this.points.push(object)
+            } else {
+              Composite.add(this.bodies, Bodies.rectangle(object.x, object.y, object.width, object.height, {
+                label: object.name,
+                isStatic: true,
+              }))
+            }
           }
-        }
+          break
+
+        case 'tilelayer':
+          const {
+            startx,
+            starty,
+          } = layer
+
+          for (const chunk of layer.chunks) {
+            const chunkOffsetX = this.anchorPoint.x - (~(chunk.x * tilewidth) + 1)
+            const chunkOffsetY = this.anchorPoint.y - (~(chunk.y * tileheight) + 1)
+
+            for (const [index, tileID] of Object.entries(chunk.data)) {
+              const tileset = mapData.tilesets[0]
+              const tile = tileset.tiles[tileID]
+
+              if (tile) {
+                const destinationX = (tilewidth * (index % chunk.width)) + chunkOffsetX
+                const destinationY = (Math.floor(index / chunk.width) * tileheight) + chunkOffsetY
+
+                const sourceX = (tileset.tilewidth * ((tileID - 1) % tileset.columns))
+                const sourceY = Math.floor((tileID - 1) / tileset.columns) * tileset.tileheight
+
+                context.drawImage(tileset.image, sourceX, sourceY, tilewidth, tileheight, destinationX, destinationY, tilewidth, tileheight)
+
+                if (tile.objectgroup) {
+                  for (const object of tile.objectgroup.objects) {
+                    const objectX = object.x + this.anchorPoint.x
+                    const objectY = object.y + this.anchorPoint.y
+
+                    Composite.add(this.bodies, Bodies.rectangle(objectX, objectY, object.width, object.height, {
+                      label: object.name,
+                      isStatic: true,
+                    }))
+                  }
+                }
+              }
+            }
+          }
+          break
       }
     }
 
