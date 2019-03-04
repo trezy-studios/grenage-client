@@ -40,28 +40,22 @@ class Entity {
     const { label } = this.options
     const size = this.parseSize(this.options.size)
 
-    const chamferRadius = 10
     const body = Body.create({
       parts: [
-        Bodies.rectangle(0, 0, size.x, size.y, {
-          chamfer: {
-            radius: chamferRadius,
-          },
-          label: 'sprite',
-        }),
-        Bodies.rectangle(0, (-size.y / 2), (size.x - chamferRadius), 1, {
+        Bodies.rectangle(0, 0, size.x, size.y, { label: 'sprite' }),
+        Bodies.rectangle(0, (-size.y / 2), size.x, 1, {
           isSensor: true,
           label: 'top',
         }),
-        Bodies.rectangle(0, (size.y / 2), (size.x - chamferRadius), 1, {
+        Bodies.rectangle(0, (size.y / 2), size.x, 1, {
           isSensor: true,
           label: 'bottom',
         }),
-        Bodies.rectangle((-size.x / 2), 0, 1, (size.y - chamferRadius), {
+        Bodies.rectangle((-size.x / 2), 0, 1, size.y, {
           isSensor: true,
           label: 'left',
         }),
-        Bodies.rectangle((size.x / 2), 0, 1, (size.y - chamferRadius), {
+        Bodies.rectangle((size.x / 2), 0, 1, size.y, {
           isSensor: true,
           label: 'right',
         }),
