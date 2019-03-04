@@ -285,7 +285,6 @@ class Game extends React.Component {
     }
 
     if (debug.showAllBodies) {
-      console.log(Composite.allBodies(this.engine.world))
       for (const body of Composite.allBodies(this.engine.world)) {
         const bodyHeight = body.bounds.max.y - body.bounds.min.y
         const bodyWidth = body.bounds.max.x - body.bounds.min.x
@@ -451,7 +450,6 @@ class Game extends React.Component {
       <main
         className="game"
         ref={this.mainElement}>
-
         <canvas
           height={height}
           ref={this.canvasElement}
