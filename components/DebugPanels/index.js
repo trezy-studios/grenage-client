@@ -1,4 +1,5 @@
 export * from './Inventory'
+export * from './Player'
 export * from './Sprites'
 export * from './Stats'
 export * from './Wireframes'

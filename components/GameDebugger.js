@@ -13,9 +13,10 @@ import React from 'react'
 
 // Local imports
 import {
+  InventoryDebugPanel,
+  PlayerDebugPanel,
   SpritesDebugPanel,
   StatsDebugPanel,
-  InventoryDebugPanel,
   WireframesDebugPanel,
 } from './DebugPanels'
 
@@ -30,6 +31,8 @@ class GameDebugger extends React.Component {
         <TabList>
           <Tab>Stats</Tab>
 
+          <Tab>Player</Tab>
+
           <Tab>Inventory</Tab>
 
           <Tab>Sprites</Tab>
@@ -39,6 +42,10 @@ class GameDebugger extends React.Component {
 
         <TabPanel>
           <StatsDebugPanel />
+        </TabPanel>
+
+        <TabPanel>
+          <PlayerDebugPanel />
         </TabPanel>
 
         <TabPanel>
