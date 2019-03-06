@@ -15,15 +15,13 @@
     }
   }
 
-  /* @for $offset from 1 through 11 {
-    $offset-string: number-to-string($offset);
-
-    @for $child from 1 through 11 {
-      > .offset-$(offset-string} {
+  @for $offset from 1 to 11 {
+    @for $child from 1 to 11 {
+      > .offset-$(offset) {
         &:nth-child($(child)n) {
           grid-column-start: $offset + $child;
         }
       }
     }
-  } */
+  }
 }
