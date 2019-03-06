@@ -5,6 +5,7 @@ import {
   TabList,
   TabPanel,
 } from 'react-tabs'
+import { connect } from 'react-redux'
 import React from 'react'
 
 
@@ -24,8 +25,22 @@ import {
 
 
 
+// Local constants
+const mapStateToProps = ({ debug }) => ({ debug })
+
+
+
+
+
+@connect(mapStateToProps)
 class GameDebugger extends React.Component {
   render () {
+    const { debug } = this.props
+
+    if (!debug.enabled) {
+      return null
+    }
+
     return (
       <Tabs className="game-debugger">
         <TabList>

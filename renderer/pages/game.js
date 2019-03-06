@@ -44,9 +44,7 @@ class Home extends React.Component {
 
         <Inventory open={ui.inventory.isVisible} />
 
-        {query.debug && (
-          <GameDebugger query={query} />
-        )}
+        <GameDebugger />
       </React.Fragment>
     )
   }

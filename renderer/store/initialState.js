@@ -10,6 +10,7 @@ const initialState = {
   },
 
   debug: {
+    enabled: false,
     showAllBodies: false,
     wireframesShowEntityAnchorPoints: false,
     wireframesShowEntityBoundingBox: false,
