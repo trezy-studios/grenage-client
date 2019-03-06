@@ -1,0 +1,29 @@
+.grid {
+  --gutter: 2rem;
+
+  align-items: flex-start;
+  display: grid;
+  grid-gap: var(--gutter);
+
+  @for $column-count from 2 to 12 {
+    &.columns-$(column-count) {
+      grid-template-columns: repeat($(column-count), 1fr);
+    }
+
+    > .span-$(column-count) {
+      grid-column: span $(column-count);
+    }
+  }
+
+  /* @for $offset from 1 through 11 {
+    $offset-string: number-to-string($offset);
+
+    @for $child from 1 through 11 {
+      > .offset-$(offset-string} {
+        &:nth-child($(child)n) {
+          grid-column-start: $offset + $child;
+        }
+      }
+    }
+  } */
+}

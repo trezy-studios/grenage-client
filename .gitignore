@@ -2,4 +2,4 @@
 yarn-error.log
 
 node_modules/
-.next/
+renderer/.next/

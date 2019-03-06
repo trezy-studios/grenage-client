@@ -1,45 +1,60 @@
 {
   "name": "grenage",
   "version": "1.0.0",
+  "main": "main.js",
   "scripts": {
-    "dev": "next",
-    "build": "next build",
-    "start": "next start"
+    "start": "electron ."
+  },
+  "repository": "https://github.com/trezy/Grenage",
+  "authors": [
+    {
+      "name" : "Trezy",
+      "email" : "tre@trezy.com",
+      "url" : "https://trezy.com/"
+    }
+  ],
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/plugin-proposal-decorators": "^7.3.0",
+    "@babel/plugin-proposal-export-namespace-from": "^7.2.0",
+    "@zeit/next-css": "^1.0.1",
+    "@zeit/next-sass": "^1.0.1",
+    "@zeit/next-workers": "^1.0.0",
+    "electron": "^5.0.0-beta.5",
+    "electron-is-dev": "^1.0.1",
+    "electron-next": "^3.1.5",
+    "electron-rebuild": "^1.8.4",
+    "next": "^8.0.3",
+    "next-redux-wrapper": "^3.0.0-alpha.2",
+    "node-sass": "^4.11.0",
+    "postcss-easy-import": "^3.0.0",
+    "postcss-for": "^2.1.1",
+    "postcss-functions": "^3.0.0",
+    "postcss-import": "^12.0.1",
+    "postcss-nested": "^4.1.2",
+    "postcss-preset-env": "^6.6.0",
+    "raw-loader": "^1.0.0",
+    "redux-devtools-extension": "^2.13.8",
+    "worker-loader": "^2.0.0"
   },
   "dependencies": {
-    "@babel/plugin-proposal-decorators": "7.2.3",
-    "@babel/plugin-proposal-export-namespace-from": "7.2.0",
-    "@firebase/app": "0.3.7",
-    "@firebase/auth": "0.9.1",
-    "@firebase/database": "0.3.10",
-    "@zeit/next-sass": "1.0.1",
-    "@zeit/next-workers": "^1.0.1-canary.1",
-    "axios": "0.18.0",
+    "axios": "^0.18.0",
     "classnames": "^2.2.6",
     "fpsmeter": "^0.3.1",
     "lodash": "^4.17.11",
     "matter-js": "^0.14.2",
-    "next": "latest",
-    "next-redux-wrapper": "2.1.0",
-    "node-sass": "latest",
-    "nprogress": "0.2.0",
+    "nprogress": "^0.2.0",
     "rafael": "^4.3.1",
-    "raw-loader": "^1.0.0",
-    "react": "^16.0.0",
+    "react": "^16.8.3",
     "react-dnd": "^7.0.2",
     "react-dnd-html5-backend": "^7.0.2",
-    "react-dom": "^16.0.0",
-    "react-redux": "6.0.0",
+    "react-dom": "^16.8.3",
+    "react-redux": "^6.0.1",
     "react-svg-inline": "^2.1.1",
     "react-tabs": "^3.0.0",
-    "redux": "4.0.1",
-    "redux-devtools-extension": "2.13.7",
-    "redux-thunk": "2.3.0",
+    "redux": "^4.0.1",
+    "redux-thunk": "^2.3.0",
     "redux-worker": "^0.1.2",
-    "uuid": "^3.3.2",
-    "worker-loader": "^2.0.0"
-  },
-  "license": "ISC",
-  "keywords": [],
-  "description": ""
+    "uuid": "^3.3.2"
+  }
 }

@@ -5,7 +5,6 @@
   font-family: sans-serif;
   min-height: 20vh;
   overflow: auto;
-  // padding: 2rem;
 
   &:empty {
     display: none;

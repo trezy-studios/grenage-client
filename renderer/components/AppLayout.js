@@ -1,13 +1,13 @@
-// Style imports
-import '../scss/reset.scss'
-import '../scss/libraries.scss'
-import '../scss/app.scss'
+// Stylesheet imports
+import '../styles/reset.css'
+import '../styles/app.css'
 
 
 
 
 
 // Module imports
+import Head from 'next/head'
 import Error from 'next/error'
 import NProgress from 'nprogress'
 import React from 'react'
@@ -77,6 +77,12 @@ class AppLayout extends React.Component {
 
     return (
       <div role="application">
+        {/* <Head>
+          <link rel="stylesheet" href="/static/scss/reset.scss" />
+          <link rel="stylesheet" href="/static/scss/libraries.scss" />
+          <link rel="stylesheet" href="/static/scss/app.scss" />
+        </Head> */}
+
         <link
           href={`//fonts.googleapis.com/css?family=${['Press Start 2P'].join('|').replace(/\s/g, '+')}`}
           rel="stylesheet" />

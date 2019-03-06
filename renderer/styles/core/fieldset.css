@@ -1,0 +1,8 @@
+fieldset {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+
+  legend {
+    grid-column: span 2;
+  }
+}
