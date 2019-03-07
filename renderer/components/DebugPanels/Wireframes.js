@@ -78,7 +78,7 @@ class WireframesDebugPanel extends React.Component {
       <React.Fragment>
         {inputs.map(({ id, label, property }) => (
           <fieldset
-            className="grid 2-columns"
+            className="grid columns-2"
             key={id}>
             <label htmlFor={`debugger-${property}`}>
               {label}

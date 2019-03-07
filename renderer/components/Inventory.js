@@ -59,7 +59,7 @@ class Inventory extends React.Component {
 
         <p>Your pack currently weighs {inventory.totalWeight}kg.</p>
 
-        <ol className="four-columns grid hide-if-empty">
+        <ol className="columns-4 grid hide-if-empty">
           {inventory.items.map((item, index) => (
             <InventoryItemSlot
               item={item}
