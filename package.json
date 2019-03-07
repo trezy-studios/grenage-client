@@ -27,6 +27,7 @@
     "next": "^8.0.3",
     "next-redux-wrapper": "^3.0.0-alpha.2",
     "node-sass": "^4.11.0",
+    "postcss-color-function": "^4.0.1",
     "postcss-easy-import": "^3.0.0",
     "postcss-for": "^2.1.1",
     "postcss-functions": "^3.0.0",

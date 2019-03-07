@@ -1,8 +1,8 @@
 i {
   background-size: cover;
   display: inline-block;
-  height: $icon-size-regular;
-  width: $icon-size-regular;
+  height: var(--icon-size-regular);
+  width: var(--icon-size-regular);
 
   > svg {
     height: 100%;

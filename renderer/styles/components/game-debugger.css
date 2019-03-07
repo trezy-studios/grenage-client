@@ -43,11 +43,11 @@
       }
 
       &:hover {
-        background-color: rgba(white, 0.1);
+        background-color: color(white a(10%));
       }
 
       &[aria-selected=true] {
-        background-color: rgba(white, 0.2);
+        background-color: color(white a(20%));
       }
     }
   }
