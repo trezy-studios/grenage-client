@@ -20,29 +20,25 @@ import {
 
 
 // Local constants
-const mapDispatchToProps = dispatch => bindActionCreators({
-  addItem: actions.inventory.addItem,
-  showInventory: actions.ui.showInventory,
-}, dispatch)
-const mapStateToProps = ({ ui }) => ({ ui })
+const mapStateToProps = ({ controls }) => ({ controls })
 
 
 
 
 
-@connect(mapStateToProps, mapDispatchToProps)
+@connect(mapStateToProps)
 class Home extends React.Component {
   render () {
     const {
       query,
-      ui,
+      controls,
     } = this.props
 
     return (
       <React.Fragment>
         <Game />
 
-        <Inventory open={ui.inventory.isVisible} />
+        <Inventory open={controls.inventory} />
 
         <GameDebugger />
       </React.Fragment>

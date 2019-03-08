@@ -6,7 +6,10 @@ import initialState from '../initialState'
 
 
 export default function (state = initialState.ui, action) {
-  const { type } = action
+  const {
+    payload,
+    type,
+  } = action
 
   switch (type) {
     case actionTypes.HIDE_INVENTORY:
@@ -25,6 +28,29 @@ export default function (state = initialState.ui, action) {
           ...state.inventory,
           isVisible: true,
         },
+      }
+
+    case actionTypes.SET_KEY_STATE:
+      if (payload.control) {
+        if (payload.control === 'closeInventory' && state.inventory.isVisible) {
+          return {
+            ...state,
+            inventory: {
+              ...state.inventory,
+              isVisible: false,
+            },
+          }
+        }
+
+        if (payload.control === 'openInventory' && !state.inventory.isVisible) {
+          return {
+            ...state,
+            inventory: {
+              ...state.inventory,
+              isVisible: payload.controlState,
+            },
+          }
+        }
       }
 
     default:

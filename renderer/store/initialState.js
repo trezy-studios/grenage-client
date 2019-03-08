@@ -1,12 +1,39 @@
+// Module imports
+import getConfig from 'next/config'
+
+
+
+
+
+// Local constants
+const { publicRuntimeConfig } = getConfig()
+
+
+
+
+
 const initialState = {
   controls: {
-    ' ': false,
-    a: false,
-    control: false,
-    d: false,
-    s: false,
-    shift: false,
-    w: false,
+    // actions
+    attack: false,
+
+    // movement
+    east: false,
+    north: false,
+    south: false,
+    west: false,
+
+    // movement modifiers
+    sneak: false,
+    sprint: false,
+
+    // ui
+    openDebugger: false,
+    closeDebugger: false,
+    closeInventory: false,
+    openInventory: false,
+
+    inventory: false,
   },
 
   debug: {
@@ -19,12 +46,16 @@ const initialState = {
 
   entities: {},
 
+  gamepads: {},
+
   inventory: {
     items: new Array(16),
     totalQuantity: 0,
     totalSlots: 16,
     totalWeight: 0,
   },
+
+  keymap: publicRuntimeConfig.keymaps,
 
   playerEntity: null,
 

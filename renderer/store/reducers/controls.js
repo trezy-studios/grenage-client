@@ -5,6 +5,7 @@ import initialState from '../initialState'
 
 
 
+
 export default function (state = initialState.controls, action) {
   const {
     payload,
@@ -13,14 +14,15 @@ export default function (state = initialState.controls, action) {
 
   switch (type) {
     case actionTypes.SET_KEY_STATE:
-      const {
-        key,
-        state: keyState,
-      } = payload
-
       return {
         ...state,
-        [key]: keyState,
+        [payload.control]: payload.controlState,
+      }
+
+    case actionTypes.UPDATE_GAMEPADS:
+      return {
+        ...state,
+        ...payload.controlUpdates,
       }
 
     default:

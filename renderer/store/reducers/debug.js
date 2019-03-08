@@ -13,10 +13,12 @@ export default function (state = initialState.debug, action) {
 
   switch (type) {
     case actionTypes.SET_KEY_STATE:
-      if (payload.key === '`' && payload.state) {
-        return {
-          ...state,
-          enabled: !state.enabled,
+      if (payload.control) {
+        if (payload.key === '`') {
+          return {
+            ...state,
+            enabled: !state.enabled,
+          }
         }
       }
 

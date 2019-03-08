@@ -31,19 +31,26 @@ import { isBrowser } from '../helpers'
 // Local constants
 const mapDispatchToProps = dispatch => bindActionCreators({
   addEntity: actions.entities.addEntity,
+  addGamepad: actions.gamepads.addGamepad,
   addItem: actions.inventory.addItem,
+  removeGamepad: actions.gamepads.removeGamepad,
   setKeyState: actions.controls.setKeyState,
+  updateGamepads: actions.gamepads.updateGamepads,
 }, dispatch)
 const mapStateToProps = ({
   controls,
   debug,
   entities,
+  gamepads,
+  keymap,
   playerEntity,
   inventory,
 }) => ({
   controls,
   debug,
   entities,
+  gamepads,
+  keymap,
   playerEntity,
   inventory,
 })
@@ -79,6 +86,9 @@ class Game extends React.Component {
 
     window.addEventListener('keyup', this._handleKeyup)
     window.addEventListener('keydown', this._handleKeydown)
+
+    window.addEventListener('gamepadconnected', this._handleGamepadConnected)
+    window.addEventListener('gamepaddisconnected', this._handleGamepadDisconnected)
 
     Events.on(this.engine, 'collisionStart', event => this._handleCollisionEvent(true, event))
     Events.on(this.engine, 'collisionEnd', event => this._handleCollisionEvent(false, event))
@@ -166,21 +176,21 @@ class Game extends React.Component {
 
       let velocityMultiplier = playerBody.render.velocityMultipliers.walk
 
-      if (controls['shift']) {
-        velocityMultiplier = playerBody.render.velocityMultipliers.run
+      if (controls['sprint']) {
+        velocityMultiplier = playerBody.render.velocityMultipliers.sprint
       }
 
-      if (controls['control']) {
+      if (controls['sneak']) {
         velocityMultiplier = playerBody.render.velocityMultipliers.sneak
       }
 
-      velocity.x = ((+controls['d']) - (+controls['a'])) * velocityMultiplier
-      velocity.y = ((+controls['s']) - (+controls['w'])) * velocityMultiplier
+      velocity.x = ((+controls['east']) - (+controls['west'])) * velocityMultiplier
+      velocity.y = ((+controls['south']) - (+controls['north'])) * velocityMultiplier
 
-      const playerIsPushingAgainstBottomOfMap = (playerY >= (mapSize.y - (playerWidth / 2))) && controls['s']
-      const playerIsPushingAgainstLeftOfMap = (playerX <= 0 + (playerWidth / 2)) && controls['a']
-      const playerIsPushingAgainstRightOfMap = (playerX >= (mapSize.x - (playerWidth / 2))) && controls['d']
-      const playerIsPushingAgainstTopOfMap = (playerY <= 0 + (playerWidth / 2)) && controls['w']
+      const playerIsPushingAgainstBottomOfMap = (playerY >= (mapSize.y - (playerWidth / 2))) && controls['south']
+      const playerIsPushingAgainstLeftOfMap = (playerX <= 0 + (playerWidth / 2)) && controls['west']
+      const playerIsPushingAgainstRightOfMap = (playerX >= (mapSize.x - (playerWidth / 2))) && controls['east']
+      const playerIsPushingAgainstTopOfMap = (playerY <= 0 + (playerWidth / 2)) && controls['north']
 
       const playerIsMovingIntoEntityOnBottom = playerBody.render.contact.bottom && (velocity.y > 0)
       const playerIsMovingIntoEntityOnLeft = playerBody.render.contact.left && (velocity.x < 0)
@@ -231,6 +241,29 @@ class Game extends React.Component {
     setKeyState(event.key.toLowerCase(), true)
   }
 
+  _handleGamepadConnected = ({ gamepad }) => {
+    const { addGamepad } = this.props
+
+    addGamepad(gamepad)
+
+    if (!this.rafael.tasks['gamepads::watch']) {
+      this.rafael.schedule('gamepads::watch', this._checkGamepadStates)
+    }
+  }
+
+  _handleGamepadDisconnected = ({ gamepad }) => {
+    const {
+      gamepads,
+      removeGamepad,
+    } = this.props
+
+    removeGamepad(gamepad)
+
+    if (!Object.values(gamepads).length) {
+      this.rafael.unschedule('gamepads::watch')
+    }
+  }
+
   _preload = async () => {
     const promises = []
 
@@ -259,7 +292,7 @@ class Game extends React.Component {
     World.add(this.engine.world, newEntities.map(({ body }) => body))
 
     if (playerEntity) {
-      // if (controls[' ']) {
+      // if (controls['attack']) {
       //   console.log('Attack!')
       // }
 
@@ -387,6 +420,50 @@ class Game extends React.Component {
     window.matterEngine = this.engine
 
     this.rafael.schedule('render', this._render)
+  }
+
+  _checkGamepadStates = () => {
+    const {
+      gamepads: oldGamepadStates,
+      keymap,
+      updateGamepads,
+    } = this.props
+    const gamepadsPatch = []
+    const newGamepadStates = navigator.getGamepads()
+
+    for (const newGamepadState of newGamepadStates) {
+      const changes = {}
+      let shouldUpdateGamepad = false
+
+      if (newGamepadState) {
+        const oldGamepadState = oldGamepadStates[newGamepadState.index]
+
+        for (const [index, axis] of Object.entries(newGamepadState.axes)) {
+          if (axis !== oldGamepadState.axes[index]) {
+            changes[`Axis ${index}`] = axis
+            shouldUpdateGamepad = true
+          }
+        }
+
+        for (const [index, button] of Object.entries(newGamepadState.buttons)) {
+          if (button.pressed !== oldGamepadState.buttons[index].pressed) {
+            changes[`Button ${index}`] = button
+            shouldUpdateGamepad = true
+          }
+        }
+      }
+
+      if (shouldUpdateGamepad) {
+        gamepadsPatch.push({
+          changes,
+          gamepad: newGamepadState,
+        })
+      }
+    }
+
+    if (gamepadsPatch.length) {
+      updateGamepads(gamepadsPatch)
+    }
   }
 
   _updateSize = async () => {

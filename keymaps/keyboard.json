@@ -1,0 +1,45 @@
+{
+  "ids": ["keyboard"],
+  "map": {
+    " ": {
+      "mapping": "attack",
+      "type": "hold"
+    },
+    "`": {
+      "mapping": "closeDebugger",
+      "type": "toggle"
+    },
+    "a": {
+      "mapping": "west",
+      "type": "hold"
+    },
+    "control": {
+      "mapping": "sneak",
+      "type": "hold"
+    },
+    "d": {
+      "mapping": "east",
+      "type": "hold"
+    },
+    "escape": {
+      "mapping": "inventory",
+      "type": "toggle"
+    },
+    "i": {
+      "mapping": "inventory",
+      "type": "toggle"
+    },
+    "s": {
+      "mapping": "south",
+      "type": "hold"
+    },
+    "shift": {
+      "mapping": "sprint",
+      "type": "hold"
+    },
+    "w": {
+      "mapping": "north",
+      "type": "hold"
+    }
+  }
+}

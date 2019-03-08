@@ -2,7 +2,10 @@ const isDev = require('electron-is-dev')
 const path = require('path')
 const prepareNext = require('electron-next')
 
-const {app, BrowserWindow} = require('electron')
+const {
+  app,
+  BrowserWindow,
+} = require('electron')
 
 let mainWindow
 
@@ -12,7 +15,7 @@ function createWindow () {
     height: 600,
     webPreferences: {
       nodeIntegration: true
-    }
+    },
   })
 
   const devPath = 'http://localhost:8000/game'

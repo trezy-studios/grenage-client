@@ -8,9 +8,9 @@
   "repository": "https://github.com/trezy/Grenage",
   "authors": [
     {
-      "name" : "Trezy",
-      "email" : "tre@trezy.com",
-      "url" : "https://trezy.com/"
+      "name": "Trezy",
+      "email": "tre@trezy.com",
+      "url": "https://trezy.com/"
     }
   ],
   "license": "ISC",
@@ -21,6 +21,7 @@
     "@zeit/next-sass": "^1.0.1",
     "@zeit/next-workers": "^1.0.0",
     "electron": "^5.0.0-beta.5",
+    "electron-devtools-installer": "^2.2.4",
     "electron-is-dev": "^1.0.1",
     "electron-next": "^3.1.5",
     "electron-rebuild": "^1.8.4",
@@ -41,6 +42,7 @@
   "dependencies": {
     "axios": "^0.18.0",
     "classnames": "^2.2.6",
+    "electron-store": "^2.0.0",
     "fpsmeter": "^0.3.1",
     "lodash": "^4.17.11",
     "matter-js": "^0.14.2",

@@ -86,8 +86,8 @@ class Entity {
       pingPongDirection: 'forward',
       size,
       velocityMultipliers: {
-        run: 1,
         sneak: 0.25,
+        sprint: 1,
         walk: 0.6,
       },
     }

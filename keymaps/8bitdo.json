@@ -1,0 +1,56 @@
+{
+  "ids": [
+    "8Bitdo NES30 Pro (Vendor: 2dc8 Product: 3820)",
+    "8Bitdo NES30 Pro (Vendor: 2dc8 Product: 9001)"
+  ],
+  "map": {
+    "Axis 0": [
+      {
+        "mapping": "west",
+        "range": [-1, -0.1],
+        "type": "hold"
+      },
+      {
+        "mapping": "east",
+        "range": [1, 0.1],
+        "type": "hold"
+      }
+    ],
+    "Axis 1": [
+      {
+        "mapping": "north",
+        "range": [-1, -0.1],
+        "type": "hold"
+      },
+      {
+        "mapping": "south",
+        "range": [1, 0.1],
+        "type": "hold"
+      }
+    ],
+    "Button 0": [
+      {
+        "mapping": "attack",
+        "type": "hold"
+      }
+    ],
+    "Button 11": [
+      {
+        "mapping": "inventory",
+        "type": "toggle"
+      }
+    ],
+    "Button 13": [
+      {
+        "mapping": "sprint",
+        "type": "hold"
+      }
+    ],
+    "Button 14": [
+      {
+        "mapping": "sneak",
+        "type": "hold"
+      }
+    ]
+  }
+}
