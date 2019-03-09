@@ -36,10 +36,17 @@ const updateGamepads = gamepadsPatch => async (dispatch, getState) => {
           if (mapping.range) {
             controlUpdates[mapping.mapping] = isNumberInRange(value, mapping.range)
           } else {
-            if (mapping.type === 'hold') {
-              controlUpdates[mapping.mapping] = value.pressed
-            } else if (value.pressed) {
-              controlUpdates[mapping.mapping] = !controls[mapping.mapping]
+            switch (controls[mapping.mapping].type) {
+              case 'hold':
+                controlUpdates[mapping.mapping] = value.pressed
+                break
+
+              case 'press':
+              case 'toggle':
+                if (value.pressed) {
+                  controlUpdates[mapping.mapping] = !controls[mapping.mapping].isActive
+                }
+                break
             }
           }
         }

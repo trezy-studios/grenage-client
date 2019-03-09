@@ -7,49 +7,41 @@
     "Axis 0": [
       {
         "mapping": "west",
-        "range": [-1, -0.1],
-        "type": "hold"
+        "range": [-1, -0.1]
       },
       {
         "mapping": "east",
-        "range": [1, 0.1],
-        "type": "hold"
+        "range": [1, 0.1]
       }
     ],
     "Axis 1": [
       {
         "mapping": "north",
-        "range": [-1, -0.1],
-        "type": "hold"
+        "range": [-1, -0.1]
       },
       {
         "mapping": "south",
-        "range": [1, 0.1],
-        "type": "hold"
+        "range": [1, 0.1]
       }
     ],
     "Button 0": [
       {
-        "mapping": "attack",
-        "type": "hold"
+        "mapping": "attack"
       }
     ],
     "Button 11": [
       {
-        "mapping": "inventory",
-        "type": "toggle"
+        "mapping": "inventory"
       }
     ],
     "Button 13": [
       {
-        "mapping": "sprint",
-        "type": "hold"
+        "mapping": "sprint"
       }
     ],
     "Button 14": [
       {
-        "mapping": "sneak",
-        "type": "hold"
+        "mapping": "sneak"
       }
     ]
   }

@@ -38,7 +38,7 @@ class Home extends React.Component {
       <React.Fragment>
         <Game />
 
-        <Inventory open={controls.inventory} />
+        <Inventory open={controls.inventory.isActive} />
 
         <GameDebugger />
       </React.Fragment>

@@ -2,44 +2,34 @@
   "ids": ["keyboard"],
   "map": {
     " ": {
-      "mapping": "attack",
-      "type": "hold"
+      "mapping": "attack"
     },
     "`": {
-      "mapping": "closeDebugger",
-      "type": "toggle"
+      "mapping": "closeDebugger"
     },
     "a": {
-      "mapping": "west",
-      "type": "hold"
+      "mapping": "west"
     },
     "control": {
-      "mapping": "sneak",
-      "type": "hold"
+      "mapping": "sneak"
     },
     "d": {
-      "mapping": "east",
-      "type": "hold"
+      "mapping": "east"
     },
     "escape": {
-      "mapping": "inventory",
-      "type": "toggle"
+      "mapping": "inventory"
     },
     "i": {
-      "mapping": "inventory",
-      "type": "toggle"
+      "mapping": "inventory"
     },
     "s": {
-      "mapping": "south",
-      "type": "hold"
+      "mapping": "south"
     },
     "shift": {
-      "mapping": "sprint",
-      "type": "hold"
+      "mapping": "sprint"
     },
     "w": {
-      "mapping": "north",
-      "type": "hold"
+      "mapping": "north"
     }
   }
 }

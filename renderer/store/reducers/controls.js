@@ -13,16 +13,26 @@ export default function (state = initialState.controls, action) {
   } = action
 
   switch (type) {
-    case actionTypes.SET_KEY_STATE:
+    case actionTypes.SET_CONTROL_STATE:
       return {
         ...state,
-        [payload.control]: payload.controlState,
+        [payload.control]: {
+          ...state[payload.control],
+          isActive: payload.controlState,
+        }
       }
 
+    case actionTypes.UNSET_PRESS_CONTROLS:
     case actionTypes.UPDATE_GAMEPADS:
       return {
         ...state,
-        ...payload.controlUpdates,
+        ...Object.entries(payload.controlUpdates).reduce((accumulator, [control, isActive]) => {
+          accumulator[control] = {
+            ...state[control],
+            isActive,
+          }
+          return accumulator
+        }, {}),
       }
 
     default:

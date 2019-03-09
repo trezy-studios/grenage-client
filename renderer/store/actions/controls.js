@@ -5,7 +5,7 @@ import actionTypes from '../actionTypes'
 
 
 
-const setKeyState = (key, isPressed, source = 'keyboard') => async (dispatch, getState) => {
+const setControlState = (key, isPressed, source = 'keyboard') => async (dispatch, getState) => {
   const {
     controls,
     keymap,
@@ -15,16 +15,17 @@ const setKeyState = (key, isPressed, source = 'keyboard') => async (dispatch, ge
   let controlState = null
 
   if (keymapping) {
-    switch (keymapping.type) {
+    switch (controls[keymapping.mapping].type) {
       case 'hold':
         shouldDispatch = true
         controlState = isPressed
         break
 
+      case 'press':
       case 'toggle':
         if (isPressed) {
           shouldDispatch = true
-          controlState = !controls[keymapping.mapping]
+          controlState = !controls[keymapping.mapping].isActive
         }
         break
     }
@@ -37,7 +38,27 @@ const setKeyState = (key, isPressed, source = 'keyboard') => async (dispatch, ge
         controlState: controlState,
         key,
       },
-      type: actionTypes.SET_KEY_STATE,
+      type: actionTypes.SET_CONTROL_STATE,
+    })
+  }
+}
+
+const unsetPressControls = () => async (dispatch, getState) => {
+  const { controls } = getState()
+  const controlUpdates = {}
+  let shouldDispatch = false
+
+  for (const [control, controlState] of Object.entries(controls)) {
+    if (controlState.type === 'press' && controlState.isActive) {
+      controlUpdates[control] = false
+      shouldDispatch = true
+    }
+  }
+
+  if (shouldDispatch) {
+    dispatch({
+      payload: { controlUpdates },
+      type: actionTypes.UNSET_PRESS_CONTROLS,
     })
   }
 }
@@ -47,5 +68,6 @@ const setKeyState = (key, isPressed, source = 'keyboard') => async (dispatch, ge
 
 
 export {
-  setKeyState,
+  setControlState,
+  unsetPressControls,
 }

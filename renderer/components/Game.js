@@ -34,7 +34,8 @@ const mapDispatchToProps = dispatch => bindActionCreators({
   addGamepad: actions.gamepads.addGamepad,
   addItem: actions.inventory.addItem,
   removeGamepad: actions.gamepads.removeGamepad,
-  setKeyState: actions.controls.setKeyState,
+  setControlState: actions.controls.setControlState,
+  unsetPressControls: actions.controls.unsetPressControls,
   updateGamepads: actions.gamepads.updateGamepads,
 }, dispatch)
 const mapStateToProps = ({
@@ -176,21 +177,21 @@ class Game extends React.Component {
 
       let velocityMultiplier = playerBody.render.velocityMultipliers.walk
 
-      if (controls['sprint']) {
+      if (controls['sprint'].isActive) {
         velocityMultiplier = playerBody.render.velocityMultipliers.sprint
       }
 
-      if (controls['sneak']) {
+      if (controls['sneak'].isActive) {
         velocityMultiplier = playerBody.render.velocityMultipliers.sneak
       }
 
-      velocity.x = ((+controls['east']) - (+controls['west'])) * velocityMultiplier
-      velocity.y = ((+controls['south']) - (+controls['north'])) * velocityMultiplier
+      velocity.x = ((+controls['east'].isActive) - (+controls['west'].isActive)) * velocityMultiplier
+      velocity.y = ((+controls['south'].isActive) - (+controls['north'].isActive)) * velocityMultiplier
 
-      const playerIsPushingAgainstBottomOfMap = (playerY >= (mapSize.y - (playerWidth / 2))) && controls['south']
-      const playerIsPushingAgainstLeftOfMap = (playerX <= 0 + (playerWidth / 2)) && controls['west']
-      const playerIsPushingAgainstRightOfMap = (playerX >= (mapSize.x - (playerWidth / 2))) && controls['east']
-      const playerIsPushingAgainstTopOfMap = (playerY <= 0 + (playerWidth / 2)) && controls['north']
+      const playerIsPushingAgainstBottomOfMap = (playerY >= (mapSize.y - (playerWidth / 2))) && controls['south'].isActive
+      const playerIsPushingAgainstLeftOfMap = (playerX <= 0 + (playerWidth / 2)) && controls['west'].isActive
+      const playerIsPushingAgainstRightOfMap = (playerX >= (mapSize.x - (playerWidth / 2))) && controls['east'].isActive
+      const playerIsPushingAgainstTopOfMap = (playerY <= 0 + (playerWidth / 2)) && controls['north'].isActive
 
       const playerIsMovingIntoEntityOnBottom = playerBody.render.contact.bottom && (velocity.y > 0)
       const playerIsMovingIntoEntityOnLeft = playerBody.render.contact.left && (velocity.x < 0)
@@ -230,15 +231,15 @@ class Game extends React.Component {
   }
 
   _handleKeyup = event => {
-    const { setKeyState } = this.props
+    const { setControlState } = this.props
 
-    setKeyState(event.key.toLowerCase(), false)
+    setControlState(event.key.toLowerCase(), false)
   }
 
   _handleKeydown = event => {
-    const { setKeyState } = this.props
+    const { setControlState } = this.props
 
-    setKeyState(event.key.toLowerCase(), true)
+    setControlState(event.key.toLowerCase(), true)
   }
 
   _handleGamepadConnected = ({ gamepad }) => {
@@ -281,6 +282,7 @@ class Game extends React.Component {
       debug,
       entities,
       playerEntity,
+      unsetPressControls,
     } = this.props
     const {
       height,
@@ -292,9 +294,9 @@ class Game extends React.Component {
     World.add(this.engine.world, newEntities.map(({ body }) => body))
 
     if (playerEntity) {
-      // if (controls['attack']) {
-      //   console.log('Attack!')
-      // }
+      if (controls['attack'].isActive) {
+        console.log('Attack!')
+      }
 
       Body.setVelocity(playerEntity.body, this._getPlayerVelocity())
     }
@@ -329,6 +331,8 @@ class Game extends React.Component {
         context.fillRect(bodyX, bodyY, bodyWidth, bodyHeight)
       }
     }
+
+    unsetPressControls()
   }
 
   _renderEntity = (entity, offset, context) => {

@@ -15,25 +15,61 @@ const { publicRuntimeConfig } = getConfig()
 const initialState = {
   controls: {
     // actions
-    attack: false,
+    attack: {
+      isActive: false,
+      type: 'press',
+    },
 
     // movement
-    east: false,
-    north: false,
-    south: false,
-    west: false,
+    east: {
+      isActive: false,
+      type: 'hold',
+    },
+    north: {
+      isActive: false,
+      type: 'hold',
+    },
+    south: {
+      isActive: false,
+      type: 'hold',
+    },
+    west: {
+      isActive: false,
+      type: 'hold',
+    },
 
     // movement modifiers
-    sneak: false,
-    sprint: false,
+    sneak: {
+      isActive: false,
+      type: 'hold',
+    },
+    sprint: {
+      isActive: false,
+      type: 'hold',
+    },
 
     // ui
-    openDebugger: false,
-    closeDebugger: false,
-    closeInventory: false,
-    openInventory: false,
+    openDebugger: {
+      isActive: false,
+      type: 'toggle',
+    },
+    closeDebugger: {
+      isActive: false,
+      type: 'toggle',
+    },
+    closeInventory: {
+      isActive: false,
+      type: 'toggle',
+    },
+    openInventory: {
+      isActive: false,
+      type: 'toggle',
+    },
 
-    inventory: false,
+    inventory: {
+      isActive: false,
+      type: 'toggle',
+    },
   },
 
   debug: {

@@ -30,7 +30,7 @@ export default function (state = initialState.ui, action) {
         },
       }
 
-    case actionTypes.SET_KEY_STATE:
+    case actionTypes.SET_CONTROL_STATE:
       if (payload.control) {
         if (payload.control === 'closeInventory' && state.inventory.isVisible) {
           return {
