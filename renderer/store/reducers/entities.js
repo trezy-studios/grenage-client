@@ -19,13 +19,16 @@ export default function (state = initialState.entities, action) {
     payload,
     type,
   } = action
+  const newState = { ...state }
 
   switch (type) {
     case actionTypes.ADD_ENTITY:
-      return {
-        ...state,
-        [payload.entity.id]: payload.entity,
-      }
+      newState[payload.entity.id] = payload.entity
+      return newState
+
+    case actionTypes.REMOVE_ENTITY:
+      delete newState[payload.id]
+      return newState
 
     default:
       return state

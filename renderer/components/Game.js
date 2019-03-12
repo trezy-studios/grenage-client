@@ -33,6 +33,7 @@ const mapDispatchToProps = dispatch => bindActionCreators({
   addEntity: actions.entities.addEntity,
   addGamepad: actions.gamepads.addGamepad,
   addItem: actions.inventory.addItem,
+  removeEntity: actions.entities.removeEntity,
   removeGamepad: actions.gamepads.removeGamepad,
   setControlState: actions.controls.setControlState,
   unsetPressControls: actions.controls.unsetPressControls,
@@ -123,7 +124,7 @@ class Game extends React.Component {
       const {
         x: playerX,
         y: playerY,
-      } = playerEntity.body.position
+      } = playerEntity.spriteBody.position
       const halfHeight = height / 2
       const halfWidth = width / 2
 
@@ -193,10 +194,10 @@ class Game extends React.Component {
       const playerIsPushingAgainstRightOfMap = (playerX >= (mapSize.x - (playerWidth / 2))) && controls['east'].isActive
       const playerIsPushingAgainstTopOfMap = (playerY <= 0 + (playerWidth / 2)) && controls['north'].isActive
 
-      const playerIsMovingIntoEntityOnBottom = playerBody.render.contact.bottom && (velocity.y > 0)
-      const playerIsMovingIntoEntityOnLeft = playerBody.render.contact.left && (velocity.x < 0)
-      const playerIsMovingIntoEntityOnRight = playerBody.render.contact.right && (velocity.x > 0)
-      const playerIsMovingIntoEntityOnTop = playerBody.render.contact.top && (velocity.y < 0)
+      const playerIsMovingIntoEntityOnBottom = playerEntity.contact.bottom && (velocity.y > 0)
+      const playerIsMovingIntoEntityOnLeft = playerEntity.contact.left && (velocity.x < 0)
+      const playerIsMovingIntoEntityOnRight = playerEntity.contact.right && (velocity.x > 0)
+      const playerIsMovingIntoEntityOnTop = playerEntity.contact.top && (velocity.y < 0)
 
       if (playerIsPushingAgainstLeftOfMap || playerIsPushingAgainstRightOfMap || playerIsMovingIntoEntityOnLeft || playerIsMovingIntoEntityOnRight) {
         velocity.x = 0
@@ -211,23 +212,35 @@ class Game extends React.Component {
   }
 
   _handleCollisionEvent = (isStarting, { pairs }) => {
-    // for (const pair of pairs) {
-    //   const {
-    //     bodyA,
-    //     bodyB,
-    //     isSensor,
-    //   } = pair
+    const { removeEntity } = this.props
 
-    //   if (isSensor && (bodyA.parent !== bodyB.parent)) {
-    //     if (['bottom', 'left', 'right', 'top'].includes(bodyA.label)) {
-    //       bodyA.parent.entity.contact[bodyA.label] = isStarting
-    //     }
+    for (const pair of pairs) {
+      const {
+        bodyA,
+        bodyB,
+        isSensor,
+      } = pair
 
-    //     if (['bottom', 'left', 'right', 'top'].includes(bodyB.label)) {
-    //       bodyB.parent.entity.contact[bodyB.label] = isStarting
-    //     }
-    //   }
-    // }
+      if (isSensor && bodyA.parent !== bodyB.parent) {
+        const attackableBody = [bodyA, bodyB].find(({ attackable }) => attackable)
+        const attackSensor = [bodyA, bodyB].find(({ label }) => label === 'attack')
+
+        const isContactSensorCollision = [bodyA, bodyB].filter(({ label }) => ['bottom', 'left', 'right', 'top'].includes(label)).length === 2
+
+        if (isContactSensorCollision) {
+          bodyA.parent.entity.contact[bodyA.label] = isStarting
+          bodyB.parent.entity.contact[bodyB.label] = isStarting
+        }
+
+        if (isStarting && attackableBody && attackSensor && (attackableBody.entity !== attackSensor.entity)) {
+          attackableBody.entity.damage(attackSensor.entity.getAttackDamage())
+
+          if (attackableBody.entity.dead) {
+            removeEntity(attackableBody.entity.id)
+          }
+        }
+      }
+    }
   }
 
   _handleKeyup = event => {
@@ -292,10 +305,13 @@ class Game extends React.Component {
     const newEntities = Object.values(entities).filter(({ body }) => !this.engine.world.bodies.includes(body))
 
     World.add(this.engine.world, newEntities.map(({ body }) => body))
+    World.remove(this.engine.world, this.engine.world.bodies.filter(body => {
+      return (body.label === 'attack') || (body.entity.dead && (body === body.parent))
+    }), true)
 
     if (playerEntity) {
       if (controls['attack'].isActive) {
-        console.log('Attack!')
+        World.add(this.engine.world, playerEntity.attack())
       }
 
       Body.setVelocity(playerEntity.body, this._getPlayerVelocity())
@@ -327,11 +343,11 @@ class Game extends React.Component {
         const bodyX = (body.position.x - (bodyWidth / 2)) - offset.x
         const bodyY = (body.position.y - (bodyHeight / 2)) - offset.y
 
-        context.fillStyle = 'rgba(0, 0, 0, 0.3)'
+        context.fillStyle = body.isSensor ? 'pink' : 'rgba(0, 0, 0, 0.3)'
         context.fillRect(bodyX, bodyY, bodyWidth, bodyHeight)
       }
     }
-
+    
     unsetPressControls()
   }
 
@@ -415,6 +431,19 @@ class Game extends React.Component {
     await this._updateSize()
 
     this._createPlayer()
+
+    // Bunk monster thingy
+
+    const { addEntity } = this.props
+    const goblinSpawnPoint = this.map.points.find(point => point.type === 'spawn::goblin')
+
+    addEntity({
+      initialPosition: goblinSpawnPoint,
+      size: 32,
+      type: 'knight',
+    })
+
+    // End bunk monster thingy
 
     this.engine.world.gravity.y = 0
 

@@ -18,9 +18,22 @@ class Entity {
 
   body = undefined
 
+  contact = {
+    bottom: false,
+    left: false,
+    right: false,
+    top: false,
+  }
+
+  dead = false
+
+  hitPoints = 10
+
   id = uuid()
 
   isReady = false
+
+  spriteBody = undefined
 
 
 
@@ -30,6 +43,42 @@ class Entity {
     Public Methods
   \***************************************************************************/
 
+  attack = () => {
+    const attackSensorPosition = {
+      x: this.body.position.x,
+      y: this.body.position.y,
+    }
+    const direction = this.getDirection()
+    const size = this.size
+
+    switch (direction) {
+      case 'east':
+        attackSensorPosition.x += size.x
+        break
+
+      case 'north':
+        attackSensorPosition.y -= size.y
+        break
+
+      case 'south':
+        attackSensorPosition.y += size.y
+        break
+
+      case 'west':
+        attackSensorPosition.x -= size.x
+        break
+    }
+
+    const attackSensor = Bodies.rectangle(attackSensorPosition.x, attackSensorPosition.y, size.x, size.y, {
+      isSensor: true,
+      label: `attack`,
+    })
+
+    attackSensor.entity = this
+
+    return attackSensor
+  }
+
   constructor (options) {
     this.options = options
 
@@ -38,24 +87,28 @@ class Entity {
 
   createBody = () => {
     const { label } = this.options
-    const size = this.parseSize(this.options.size)
+    const size = this.size
+
+    this.spriteBody = Bodies.rectangle(0, 0, size.x, size.y, { label: 'sprite' })
+    this.spriteBody.attackable = true
+    this.spriteBody.entity = this
 
     const body = Body.create({
       parts: [
-        Bodies.rectangle(0, 0, size.x, size.y, { label: 'sprite' }),
-        Bodies.rectangle(0, (-size.y / 2), size.x, 1, {
+        this.spriteBody,
+        Bodies.rectangle(0, (-size.y / 2), size.x - 1, 2, {
           isSensor: true,
           label: 'top',
         }),
-        Bodies.rectangle(0, (size.y / 2), size.x, 1, {
+        Bodies.rectangle(0, (size.y / 2), size.x - 1, 2, {
           isSensor: true,
           label: 'bottom',
         }),
-        Bodies.rectangle((-size.x / 2), 0, 1, size.y, {
+        Bodies.rectangle((-size.x / 2), 0, 2, size.y - 1, {
           isSensor: true,
           label: 'left',
         }),
-        Bodies.rectangle((size.x / 2), 0, 1, size.y, {
+        Bodies.rectangle((size.x / 2), 0, 2, size.y - 1, {
           isSensor: true,
           label: 'right',
         }),
@@ -67,7 +120,8 @@ class Entity {
     })
   
     Body.setPosition(body, this.options.initialPosition)
-  
+
+    body.entity = this
     body.render = {
       ...body.render,
       contact: {
@@ -95,6 +149,23 @@ class Entity {
     this.body = body
 
     return body
+  }
+
+  damage = damageAmount => {
+    this.hitPoints -= damageAmount
+
+    console.log(`Entity ${this.id} is now at ${this.hitPoints} HP!`)
+
+    if (this.hitPoints <= 0) {
+      this.kill()
+    }
+  }
+
+  getAttackDamage = (type = 'iron-shortsword') => {
+    switch (type) {
+      case 'iron-shortsword':
+        return 1
+    }
   }
 
   getCurrentFrame = () => {
@@ -196,6 +267,12 @@ class Entity {
     this.isReady = true
   }
 
+  kill = () => {
+    this.dead = true
+
+    console.log(`Entity ${this.id} has been killed!`)
+  }
+
   parseSize (originalSize) {
     let parsedSize = originalSize
 
@@ -215,6 +292,18 @@ class Entity {
     }
 
     return parsedSize
+  }
+
+
+
+
+
+  /***************************************************************************\
+    Getters
+  \***************************************************************************/
+
+  get size () {
+    return this.parseSize(this.options.size)
   }
 }
 

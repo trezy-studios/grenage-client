@@ -30,10 +30,18 @@ const addEntity = entityData => async dispatch => {
   })
 }
 
+const removeEntity = id => async dispatch => {
+  dispatch({
+    payload: { id },
+    type: actionTypes.REMOVE_ENTITY,
+  })
+}
+
 
 
 
 
 export {
   addEntity,
+  removeEntity,
 }
