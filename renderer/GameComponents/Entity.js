@@ -229,9 +229,15 @@ class Entity {
 
   getDirection = () => {
     const { velocity } = this.body
+    const directions = {
+      x: ['east', 'west'],
+      y: ['south', 'north'],
+    }
 
-    if (velocity.x !== 0) {
-      this.body.render.direction = (velocity.x > 0) ? 'east' : 'west'
+    if (Math.abs(velocity.x + velocity.y) !== 0) {
+      const axis = (Math.abs(velocity.x) > Math.abs(velocity.y)) ? 'x' : 'y'
+
+      this.body.render.direction = (velocity[axis] > 0) ? directions[axis][0] : directions[axis][1]
     }
 
     return this.body.render.direction
