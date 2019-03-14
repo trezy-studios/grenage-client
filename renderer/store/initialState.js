@@ -77,6 +77,8 @@ const initialState = {
     showAllBodies: false,
     wireframesShowEntityAnchorPoints: false,
     wireframesShowEntityBoundingBox: false,
+    wireframesShowEntityEnvironmentalHitbox: false,
+    wireframesShowEntityHitbox: false,
     wireframesShowMapViewBoundingBox: false,
   },
 

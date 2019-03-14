@@ -6,18 +6,16 @@ import { Entity } from '../../GameComponents'
 
 
 
-const addEntity = entityData => async dispatch => {
+const addEntity = entityData => dispatch => {
   const {
     initialPosition,
     isPlayer,
-    size,
     type,
   } = entityData
 
   const entity = new Entity({
     initialPosition,
     label: (isPlayer ? 'player' : type),
-    size: size || 32,
     type,
   })
 
@@ -28,6 +26,8 @@ const addEntity = entityData => async dispatch => {
     },
     type: actionTypes.ADD_ENTITY,
   })
+
+  return entity
 }
 
 const removeEntity = id => async dispatch => {

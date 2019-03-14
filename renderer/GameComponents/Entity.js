@@ -27,13 +27,65 @@ class Entity {
 
   dead = false
 
+  environmentalHitboxes = {}
+
   hitPoints = 10
 
   id = uuid()
 
   isReady = false
-
+  
   spriteBody = undefined
+  
+  spriteData = undefined
+
+  hitboxes = {}
+
+
+
+
+
+  /***************************************************************************\
+    Private Methods
+  \***************************************************************************/
+
+  _generateHitboxes = (hitboxContainer, hitboxSlices, name, isSensor = false) => {
+    const {
+      size,
+      zones,
+    } = this
+
+    if (hitboxSlices.length > 1) {
+      for (const hitboxSlice of hitboxSlices) {
+        const hitboxDirection = hitboxSlice.name.split('::')[1]
+        const hitboxBounds = hitboxSlice.keys[0].bounds
+        const zoneBounds = zones.find(({ name }) => new RegExp(`${hitboxDirection}$`, 'gi').test(name)).keys[0].bounds
+
+        const hitboxX = (hitboxBounds.w / 2) + hitboxBounds.x
+        const hitboxY = (hitboxBounds.h / 2) + hitboxBounds.y
+
+        hitboxContainer[hitboxDirection] = Bodies.rectangle(hitboxX, hitboxY, hitboxBounds.w, hitboxBounds.h, {
+          label: name,
+          isSensor,
+        })
+      }
+    } else {
+      const hitboxBounds = hitboxSlices[0].keys[0].bounds
+      const hitboxX = (hitboxBounds.w / 2) + hitboxBounds.x
+      const hitboxY = (hitboxBounds.h / 2) + hitboxBounds.y
+
+      const hitboxBody = Bodies.rectangle(hitboxX, hitboxY, hitboxBounds.w, hitboxBounds.h, {
+        label: name,
+        isSensor,
+      })
+
+      for (const hitboxDirection of ['east', 'north', 'south', 'west']) {
+        hitboxContainer[hitboxDirection] = hitboxBody
+      }
+    }
+
+    return hitboxContainer
+  }
 
 
 
@@ -53,23 +105,23 @@ class Entity {
 
     switch (direction) {
       case 'east':
-        attackSensorPosition.x += size.x
+        attackSensorPosition.x += size.w
         break
 
       case 'north':
-        attackSensorPosition.y -= size.y
+        attackSensorPosition.y -= size.h
         break
 
       case 'south':
-        attackSensorPosition.y += size.y
+        attackSensorPosition.y += size.h
         break
 
       case 'west':
-        attackSensorPosition.x -= size.x
+        attackSensorPosition.x -= size.w
         break
     }
 
-    const attackSensor = Bodies.rectangle(attackSensorPosition.x, attackSensorPosition.y, size.x, size.y, {
+    const attackSensor = Bodies.rectangle(attackSensorPosition.x, attackSensorPosition.y, size.w, size.h, {
       isSensor: true,
       label: `attack`,
     })
@@ -87,38 +139,38 @@ class Entity {
 
   createBody = () => {
     const { label } = this.options
-    const size = this.size
+    const {
+      environmentalHitboxSlices,
+      hitboxSlices,
+      size,
+    } = this
+    const bodyParts = []
 
-    this.spriteBody = Bodies.rectangle(0, 0, size.x, size.y, { label: 'sprite' })
+    this.spriteBody = Bodies.rectangle((size.w / 2), (size.h / 2), size.w, size.h, {
+      isSensor: true,
+      label: 'sprite',
+    })
     this.spriteBody.attackable = true
     this.spriteBody.entity = this
 
+    bodyParts.push(this.spriteBody)
+
+    this._generateHitboxes(this.hitboxes, hitboxSlices, 'hitbox', !!environmentalHitboxSlices.length)
+    bodyParts.push(this.hitboxes['south'])
+
+    if (environmentalHitboxSlices.length) {
+      this._generateHitboxes(this.environmentalHitboxes, environmentalHitboxSlices, 'environmental-hitbox')
+      bodyParts.push(this.environmentalHitboxes['south'])
+    }
+
     const body = Body.create({
-      parts: [
-        this.spriteBody,
-        Bodies.rectangle(0, (-size.y / 2), size.x - 1, 2, {
-          isSensor: true,
-          label: 'top',
-        }),
-        Bodies.rectangle(0, (size.y / 2), size.x - 1, 2, {
-          isSensor: true,
-          label: 'bottom',
-        }),
-        Bodies.rectangle((-size.x / 2), 0, 2, size.y - 1, {
-          isSensor: true,
-          label: 'left',
-        }),
-        Bodies.rectangle((size.x / 2), 0, 2, size.y - 1, {
-          isSensor: true,
-          label: 'right',
-        }),
-      ],
+      parts: bodyParts,
       frictionStatic: 0,
       frictionAir: 0.1,
       inertia: Infinity,
       label: label || 'unknown',
     })
-  
+
     Body.setPosition(body, this.options.initialPosition)
 
     body.entity = this
@@ -132,7 +184,7 @@ class Entity {
       },
       currentFrameIndex: 0,
       currentFrameDuration: 0,
-      direction: 'east',
+      direction: 'south',
       id: this.id,
       image: new Image,
       imageDownloadComplete: false,
@@ -216,7 +268,6 @@ class Entity {
       currentFrameDuration += 16
     }
 
-
     this.body.render = {
       ...this.body.render,
       currentFrameDuration,
@@ -224,7 +275,24 @@ class Entity {
       pingPongDirection,
     }
 
-    return spriteData.frames[currentFrameIndex]
+    return spriteData.frames[currentFrameIndex].frame
+  }
+
+  getCoordinatesToRender = () => {
+    const renderBounds = { ...this.getCurrentFrame() }
+    const zones = this.zones
+
+    if (zones.length) {
+      const zone = zones.find(({ name }) => new RegExp(`::${this.getDirection()}$`, 'gi').test(name))
+      const { bounds } = zone.keys[0]
+
+      renderBounds.h = bounds.h
+      renderBounds.w = bounds.w
+      renderBounds.x = renderBounds.x + bounds.x
+      renderBounds.y = renderBounds.y + bounds.y
+    }
+
+    return renderBounds
   }
 
   getDirection = () => {
@@ -236,11 +304,15 @@ class Entity {
 
     if (Math.abs(velocity.x + velocity.y) !== 0) {
       const axis = (Math.abs(velocity.x) > Math.abs(velocity.y)) ? 'x' : 'y'
-
       this.body.render.direction = (velocity[axis] > 0) ? directions[axis][0] : directions[axis][1]
     }
 
     return this.body.render.direction
+  }
+
+  getCurrentHitbox = () => {
+    const { spriteData } = this.body.render
+    console.log(spriteData.meta.slices[`hitbox::${this.getDirection()}`])
   }
 
   getState = () => {
@@ -252,10 +324,12 @@ class Entity {
   }
 
   initialize = async () => {
+    const spriteData = await fetch(`${this.baseURL}/${this.options.type}.json`).then(response => response.json())
+    this.spriteData = spriteData
+
     this.createBody()
 
-    const spriteData = await fetch(`${this.baseURL}/${this.options.type}.json`).then(response => response.json())
-    const image = this.body.render.image = new Image
+    const image = new Image
     const imageLoadPromise = new Promise(resolve => {
       this.body.render.imageDownloadStarted = true
 
@@ -269,6 +343,7 @@ class Entity {
 
     await imageLoadPromise
 
+    this.body.render.image = image
     this.body.render.spriteData = spriteData
     this.isReady = true
   }
@@ -279,27 +354,6 @@ class Entity {
     console.log(`Entity ${this.id} has been killed!`)
   }
 
-  parseSize (originalSize) {
-    let parsedSize = originalSize
-
-    if (typeof parsedSize === 'string') {
-      parsedSize = parseInt(parsedSize)
-    }
-
-    if (typeof parsedSize !== 'object') {
-      if (isNaN(parsedSize)) {
-        throw new Error('entity sizes MUST be a number')
-      }
-  
-      parsedSize = {
-        x: parsedSize,
-        y: parsedSize,
-      }
-    }
-
-    return parsedSize
-  }
-
 
 
 
@@ -308,8 +362,26 @@ class Entity {
     Getters
   \***************************************************************************/
 
+  get environmentalHitboxSlices () {
+    return this.spriteData.meta.slices.filter(({ name }) => /^environmental-hitbox/gi.test(name))
+  }
+
+  get hitboxSlices () {
+    return this.spriteData.meta.slices.filter(({ name }) => /^hitbox/gi.test(name))
+  }
+
   get size () {
-    return this.parseSize(this.options.size)
+    const zones = this.zones
+
+    if (zones.length) {
+      return zones[0].keys[0].bounds
+    }
+
+    return this.spriteData.frames[0].sourceSize
+  }
+
+  get zones () {
+    return this.spriteData.meta.slices.filter(({ name }) => /^zone::/gi.test(name))
   }
 }
 

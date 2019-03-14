@@ -69,6 +69,16 @@ class WireframesDebugPanel extends React.Component {
       },
       {
         id: uuid(),
+        label: 'Show hitboxes',
+        property: 'wireframesShowEntityHitbox',
+      },
+      {
+        id: uuid(),
+        label: 'Show environmental hitboxes',
+        property: 'wireframesShowEntityEnvironmentalHitbox',
+      },
+      {
+        id: uuid(),
         label: 'Show all bodies',
         property: 'showAllBodies',
       },

@@ -96,15 +96,14 @@ class Game extends React.Component {
     Events.on(this.engine, 'collisionEnd', event => this._handleCollisionEvent(false, event))
   }
 
-  _createPlayer () {
+  _createPlayer = () => {
     const { addEntity } = this.props
     const playerSpawnPoint = this.map.points.find(point => point.type === 'spawn::player')
 
-    addEntity({
+    return addEntity({
       isPlayer: true,
       initialPosition: playerSpawnPoint,
-      size: 32,
-      type: 'knight',
+      type: 'human',
     })
   }
 
@@ -283,8 +282,17 @@ class Game extends React.Component {
 
     this.map = new Map({ mapName: 'Hometown' })
     promises.push(this.map.initialize())
-
     await Promise.all(promises)
+
+    const playerEntity = this._createPlayer()
+    await new Promise(resolve => {
+      const interval = setInterval(() => {
+        if (playerEntity.isReady) {
+          clearInterval(interval)
+          resolve()
+        }
+      }, 100)
+    })
 
     this.setState({ preloadComplete: true })
   }
@@ -302,14 +310,16 @@ class Game extends React.Component {
       width,
     } = this.state
 
-    const newEntities = Object.values(entities).filter(({ body }) => !this.engine.world.bodies.includes(body))
+    const newEntities = Object.values(entities).filter(({ body, isReady }) => {
+      return isReady && !this.engine.world.bodies.includes(body)
+    })
 
     World.add(this.engine.world, newEntities.map(({ body }) => body))
     World.remove(this.engine.world, this.engine.world.bodies.filter(body => {
       return (body.label === 'attack') || (body.entity.dead && (body === body.parent))
     }), true)
 
-    if (playerEntity) {
+    if (playerEntity && playerEntity.isReady) {
       if (controls['attack'].isActive) {
         World.add(this.engine.world, playerEntity.attack())
       }
@@ -330,7 +340,7 @@ class Game extends React.Component {
 
     // Render entities
     for (const entity of Object.values(entities)) {
-      if (entity.body.render.imageDownloadComplete) {
+      if (entity.isReady && entity.body.render.imageDownloadComplete) {
         this._renderEntity(entity, offset, context)
       }
     }
@@ -347,42 +357,38 @@ class Game extends React.Component {
         context.fillRect(bodyX, bodyY, bodyWidth, bodyHeight)
       }
     }
-    
+
     unsetPressControls()
   }
 
   _renderEntity = (entity, offset, context) => {
     const {
       wireframesShowEntityAnchorPoints,
-      wireframesShowEntityBoundingBox,
+      wireframesShowEntityEnvironmentalHitbox,
+      wireframesShowEntityHitbox,
     } = this.props.debug
 
     const {
-      frame: {
-        h: sourceHeight,
-        w: sourceWidth,
-        x: sourceX,
-        y: sourceY,
-      },
-    } = entity.getCurrentFrame()
+      h: sourceHeight,
+      w: sourceWidth,
+      x: sourceX,
+      y: sourceY,
+    } = entity.getCoordinatesToRender()
 
     const renderableBody = entity.body.parts.find(({ label }) => label === 'sprite')
 
     if (renderableBody) {
-      const horizontalScale = (entity.getDirection() === 'east') ? 1 : -1
-
-      const destinationX = Math.round(renderableBody.position.x - offset.x) - (sourceWidth / 2)
-      const destinationY = Math.round(renderableBody.position.y - offset.y) - (sourceHeight / 2)
+      const destinationX = Math.round((renderableBody.position.x - offset.x) - (sourceWidth / 2))
+      const destinationY = Math.round((renderableBody.position.y - offset.y) - (sourceHeight / 2))
 
       context.save()
-      context.scale(horizontalScale, 1)
       context.drawImage(
         entity.body.render.image,
         sourceX,
         sourceY,
         sourceWidth,
         sourceHeight,
-        destinationX * horizontalScale - ((horizontalScale === -1) ? sourceWidth : 0),
+        destinationX,
         destinationY,
         sourceWidth,
         sourceHeight
@@ -397,11 +403,31 @@ class Game extends React.Component {
         context.fill()
       }
 
-      if (wireframesShowEntityBoundingBox) {
-        // Sprite bounding box
+      if (wireframesShowEntityHitbox) {
+        // Entity hitbox
+        const hitbox = entity.body.parts.find(({ label }) => label === 'hitbox')
+        const hitboxHeight = Math.abs(hitbox.bounds.min.y - hitbox.bounds.max.y)
+        const hitboxWidth = Math.abs(hitbox.bounds.min.x - hitbox.bounds.max.x)
+
         context.beginPath()
-        context.strokeStyle = 'black'
-        context.strokeRect(destinationX, destinationY, sourceWidth, sourceHeight)
+        context.fillStyle = 'rgba(255, 0, 0, 0.5)'
+        context.fillRect((hitbox.position.x - (hitboxWidth / 2) - offset.x), (hitbox.position.y - (hitboxHeight / 2) - offset.y), hitboxWidth, hitboxHeight)
+      }
+
+      if (wireframesShowEntityEnvironmentalHitbox) {
+        // Entity environmental hitbox
+        let hitbox = entity.body.parts.find(({ label }) => label === 'environmental-hitbox')
+
+        if (!hitbox) {
+          hitbox = entity.body.parts.find(({ label }) => label === 'hitbox')
+        }
+
+        const hitboxHeight = Math.abs(hitbox.bounds.min.y - hitbox.bounds.max.y)
+        const hitboxWidth = Math.abs(hitbox.bounds.min.x - hitbox.bounds.max.x)
+
+        context.beginPath()
+        context.fillStyle = 'rgba(0, 255, 0, 0.5)'
+        context.fillRect((hitbox.position.x - (hitboxWidth / 2) - offset.x), (hitbox.position.y - (hitboxHeight / 2) - offset.y), hitboxWidth, hitboxHeight)
       }
     }
   }
@@ -430,8 +456,6 @@ class Game extends React.Component {
     await this._preload()
     await this._updateSize()
 
-    this._createPlayer()
-
     // Bunk monster thingy
 
     const { addEntity } = this.props
@@ -439,8 +463,27 @@ class Game extends React.Component {
 
     addEntity({
       initialPosition: goblinSpawnPoint,
-      size: 32,
-      type: 'knight',
+      type: 'flaming-skull',
+    })
+
+    addEntity({
+      initialPosition: goblinSpawnPoint,
+      type: 'orange-slime',
+    })
+
+    addEntity({
+      initialPosition: goblinSpawnPoint,
+      type: 'green-slime',
+    })
+
+    addEntity({
+      initialPosition: goblinSpawnPoint,
+      type: 'red-slime',
+    })
+
+    addEntity({
+      initialPosition: goblinSpawnPoint,
+      type: 'blue-slime',
     })
 
     // End bunk monster thingy
