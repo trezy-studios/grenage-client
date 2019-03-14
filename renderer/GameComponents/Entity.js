@@ -359,6 +359,17 @@ class Entity {
     Getters
   \***************************************************************************/
 
+  get environmentalHitbox () {
+    const bodyParts = this.body.parts
+    let environmentalHitbox = bodyParts.find(({ label }) => label === 'environmental-hitbox')
+
+    if (!environmentalHitbox) {
+      environmentalHitbox = bodyParts.find(({ label }) => label === 'hitbox')
+    }
+
+    return environmentalHitbox
+  }
+
   get environmentalHitboxSlices () {
     return this.spriteData.meta.slices.filter(({ name }) => /^environmental-hitbox/gi.test(name))
   }

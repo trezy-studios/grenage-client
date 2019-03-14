@@ -341,7 +341,18 @@ class Game extends React.Component {
     this._renderMap(this.map, offset, context)
 
     // Render entities
-    for (const entity of Object.values(entities)) {
+    const entitiesAsArray = Object.values(entities).filter(({ isReady }) => isReady).sort((entityA, entityB) => {
+      const entityAY = entityA.environmentalHitbox.bounds.min.y
+      const entityBY = entityB.environmentalHitbox.bounds.min.y
+
+      if (entityAY > entityBY) {
+        return 1
+      }
+
+      return -1
+    })
+
+    for (const entity of entitiesAsArray) {
       if (entity.isReady && entity.body.render.imageDownloadComplete) {
         this._renderEntity(entity, offset, context)
       }
