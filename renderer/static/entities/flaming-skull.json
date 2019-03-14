@@ -1,0 +1,52 @@
+{ "frames": [
+   {
+    "filename": "flaming-skull 0.aseprite",
+    "frame": { "x": 0, "y": 0, "w": 32, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 32, "h": 128 },
+    "sourceSize": { "w": 32, "h": 128 },
+    "duration": 200
+   },
+   {
+    "filename": "flaming-skull 1.aseprite",
+    "frame": { "x": 32, "y": 0, "w": 32, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 32, "h": 128 },
+    "sourceSize": { "w": 32, "h": 128 },
+    "duration": 200
+   },
+   {
+    "filename": "flaming-skull 2.aseprite",
+    "frame": { "x": 64, "y": 0, "w": 32, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 32, "h": 128 },
+    "sourceSize": { "w": 32, "h": 128 },
+    "duration": 200
+   }
+ ],
+ "meta": {
+  "app": "http://www.aseprite.org/",
+  "version": "1.2.10-beta4",
+  "image": "/Users/trezy/Development/Grenage/renderer/static/entities/flaming-skull.png",
+  "format": "RGBA8888",
+  "size": { "w": 96, "h": 128 },
+  "scale": "1",
+  "frameTags": [
+   { "name": "idle", "from": 0, "to": 2, "direction": "pingpong" },
+   { "name": "walk", "from": 0, "to": 2, "direction": "pingpong" }
+  ],
+  "slices": [
+   { "name": "zone::south", "color": "#0000ffff", "keys": [{ "frame": 0, "bounds": {"x": 0, "y": 0, "w": 32, "h": 32 } }, { "frame": 5, "bounds": {"x": 0, "y": 0, "w": 32, "h": 32 } }] },
+   { "name": "zone::north", "color": "#0000ffff", "keys": [{ "frame": 0, "bounds": {"x": 0, "y": 32, "w": 32, "h": 32 } }, { "frame": 5, "bounds": {"x": 0, "y": 32, "w": 32, "h": 32 } }] },
+   { "name": "zone::east", "color": "#0000ffff", "keys": [{ "frame": 0, "bounds": {"x": 0, "y": 64, "w": 32, "h": 32 } }, { "frame": 5, "bounds": {"x": 0, "y": 64, "w": 32, "h": 32 } }] },
+   { "name": "zone::west", "color": "#0000ffff", "keys": [{ "frame": 0, "bounds": {"x": 0, "y": 96, "w": 32, "h": 32 } }, { "frame": 5, "bounds": {"x": 0, "y": 96, "w": 32, "h": 32 } }] },
+   { "name": "hitbox::south", "color": "#0000ffff", "keys": [{ "frame": 0, "bounds": {"x": 8, "y": 9, "w": 15, "h": 18 } }] },
+   { "name": "hitbox::north", "color": "#0000ffff", "keys": [{ "frame": 0, "bounds": {"x": 8, "y": 40, "w": 15, "h": 19 } }] },
+   { "name": "hitbox::east", "color": "#0000ffff", "keys": [{ "frame": 0, "bounds": {"x": 9, "y": 73, "w": 15, "h": 19 } }] },
+   { "name": "hitbox::west", "color": "#0000ffff", "keys": [{ "frame": 0, "bounds": {"x": 8, "y": 105, "w": 15, "h": 19 } }] }
+  ]
+ }
+}
