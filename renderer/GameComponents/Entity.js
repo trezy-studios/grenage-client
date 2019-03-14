@@ -68,6 +68,8 @@ class Entity {
           label: name,
           isSensor,
         })
+
+        hitboxContainer[hitboxDirection].entity = this
       }
     } else {
       const hitboxBounds = hitboxSlices[0].keys[0].bounds
@@ -81,6 +83,7 @@ class Entity {
 
       for (const hitboxDirection of ['east', 'north', 'south', 'west']) {
         hitboxContainer[hitboxDirection] = hitboxBody
+        hitboxContainer[hitboxDirection].entity = this
       }
     }
 
@@ -150,7 +153,6 @@ class Entity {
       isSensor: true,
       label: 'sprite',
     })
-    this.spriteBody.attackable = true
     this.spriteBody.entity = this
 
     bodyParts.push(this.spriteBody)
@@ -308,11 +310,6 @@ class Entity {
     }
 
     return this.body.render.direction
-  }
-
-  getCurrentHitbox = () => {
-    const { spriteData } = this.body.render
-    console.log(spriteData.meta.slices[`hitbox::${this.getDirection()}`])
   }
 
   getState = () => {

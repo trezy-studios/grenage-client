@@ -221,21 +221,23 @@ class Game extends React.Component {
       } = pair
 
       if (isSensor && bodyA.parent !== bodyB.parent) {
-        const attackableBody = [bodyA, bodyB].find(({ attackable }) => attackable)
-        const attackSensor = [bodyA, bodyB].find(({ label }) => label === 'attack')
+        const {
+          attack,
+          hitbox,
+        } = [bodyA, bodyB].reduce((accumulator, body) => {
+          if (body.label === 'hitbox') {
+            accumulator.hitbox = body
+          } else if (body.label === 'attack') {
+            accumulator.attack = body
+          }
+          return accumulator
+        }, {})
 
-        const isContactSensorCollision = [bodyA, bodyB].filter(({ label }) => ['bottom', 'left', 'right', 'top'].includes(label)).length === 2
+        if (isStarting && hitbox && attack && (hitbox.entity !== attack.entity)) {
+          hitbox.entity.damage(attack.entity.getAttackDamage())
 
-        if (isContactSensorCollision) {
-          bodyA.parent.entity.contact[bodyA.label] = isStarting
-          bodyB.parent.entity.contact[bodyB.label] = isStarting
-        }
-
-        if (isStarting && attackableBody && attackSensor && (attackableBody.entity !== attackSensor.entity)) {
-          attackableBody.entity.damage(attackSensor.entity.getAttackDamage())
-
-          if (attackableBody.entity.dead) {
-            removeEntity(attackableBody.entity.id)
+          if (hitbox.entity.dead) {
+            removeEntity(hitbox.entity.id)
           }
         }
       }
