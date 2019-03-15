@@ -11,6 +11,7 @@ import { connect } from 'react-redux'
 import { debounce } from 'lodash'
 import Rafael from 'rafael'
 import React from 'react'
+import TWEEN from '@tweenjs/tween.js'
 
 
 
@@ -19,6 +20,7 @@ import React from 'react'
 // Local imports
 import {
   Entity,
+  FloatingText,
   Map,
 } from '../GameComponents'
 import { actions } from '../store'
@@ -233,8 +235,42 @@ class Game extends React.Component {
           return accumulator
         }, {})
 
-        if (isStarting && hitbox && attack && (hitbox.entity !== attack.entity)) {
-          hitbox.entity.damage(attack.entity.getAttackDamage())
+        if (isStarting && hitbox && attack && !attack.entity.dead && (hitbox.entity !== attack.entity)) {
+          const attackDamage = attack.entity.getAttackDamage()
+
+          hitbox.entity.damage(attackDamage)
+
+          new FloatingText({
+            onUpdate: changes => {
+              const context = this.canvasElement.current.getContext('2d', { alpha: false })
+              const offset = this._getOffset()
+              const text = (hitbox.entity.hitPoints <= 0) ? '☠️' : attackDamage
+
+              context.font = '0.6em "Press Start 2P"'
+              context.fillStyle = `rgb(${changes.red}, ${changes.green}, ${changes.blue})`
+              context.globalAlpha = changes.opacity
+              context.shadowColor = 'black'
+              context.shadowBlur = 2
+              context.textAlign = 'center'
+              context.fillText(text, changes.x - offset.x, changes.y - offset.y)
+
+              context.globalAlpha = 1
+              context.shadowColor = 'transparent'
+            },
+            origin: {
+              ...hitbox.position,
+              blue: 0,
+              green: 255,
+              red: 243,
+            },
+            destination: {
+              blue: 0,
+              green: 101,
+              red: 243,
+              x: `${['+', '-'][Math.round(Math.random())]}${Math.round(Math.random() * 10)}`,
+              y: '-20',
+            }
+          })
 
           if (hitbox.entity.dead) {
             removeEntity(hitbox.entity.id)
@@ -370,6 +406,8 @@ class Game extends React.Component {
         context.fillRect(bodyX, bodyY, bodyWidth, bodyHeight)
       }
     }
+
+    TWEEN.update()
 
     unsetPressControls()
   }
