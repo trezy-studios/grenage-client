@@ -778,6 +778,11 @@
   resolved "https://registry.yarnpkg.com/@csstools/convert-colors/-/convert-colors-1.4.0.tgz#ad495dc41b12e75d588c6db8b9834f08fa131eb7"
   integrity sha512-5a6wqoJV/xEdbRNKVo6I4hO3VjyDq//8q2f9I6PBAvMesJHFauXDorcNCsr9RzvsZnaWi5NYCcfyqP1QeFHFbw==
 
+"@tweenjs/tween.js@^17.3.0":
+  version "17.3.0"
+  resolved "https://registry.yarnpkg.com/@tweenjs/tween.js/-/tween.js-17.3.0.tgz#1cbea14b4b5baa292274c96766fd1b2a56b7ca9f"
+  integrity sha512-SPkhNj9/wGfbdX2C3B3KhttLQ4iesd+Ny8Dv1RnqF1MFUIqsZz/OJVLzJEHSEl7zheNx70dvqrwfbCFDQ0sWBw==
+
 "@types/node@^10.12.18":
   version "10.12.29"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-10.12.29.tgz#c2c8d2d27bb55649fbafe8ea1731658421f38acf"
