@@ -267,7 +267,7 @@ class Game extends React.Component {
               blue: 0,
               green: 101,
               red: 243,
-              x: `${['+', '-'][Math.round(Math.random())]}${Math.round(Math.random() * 10)}`,
+              x: `${['+', '-'][Math.round(Math.random())]}${Math.round(Math.random() * 20)}`,
               y: '-20',
             }
           })
@@ -549,6 +549,18 @@ class Game extends React.Component {
     this.rafael.schedule('render', this._render)
   }
 
+  // _startConnection = () => {
+  //   const connection = new RTCPeerConnection()
+
+  //   // const candidateString = `a=candidate:${Math.random().toString().replace(/^0\./, '')} 1 udp 1 0.0.0.0 80 typ host`
+  //   const candidateString = 'a=candidate:1862263974 1 udp 2113937151 192.168.1.73 60834 typ host'
+
+  //   const iceCandidate = new RTCIceCandidate({ candidate: candidateString })
+  //   console.log(iceCandidate)
+
+  //   connection.addIceCandidate(iceCandidate)
+  // }
+
   _checkGamepadStates = () => {
     const {
       gamepads: oldGamepadStates,
@@ -620,6 +632,7 @@ class Game extends React.Component {
   componentDidMount () {
     this._bindEvents()
     this._start()
+    // this._startConnection()
   }
 
   componentWillUnmount () {
