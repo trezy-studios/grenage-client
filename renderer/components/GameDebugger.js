@@ -18,6 +18,7 @@ import {
   PlayerDebugPanel,
   SpritesDebugPanel,
   StatsDebugPanel,
+  TilesDebugPanel,
   WireframesDebugPanel,
 } from './DebugPanels'
 
@@ -52,6 +53,8 @@ class GameDebugger extends React.Component {
 
           <Tab>Sprites</Tab>
 
+          <Tab>Tiles</Tab>
+
           <Tab>Wireframes</Tab>
         </TabList>
 
@@ -69,6 +72,10 @@ class GameDebugger extends React.Component {
 
         <TabPanel>
           <SpritesDebugPanel />
+        </TabPanel>
+
+        <TabPanel>
+          <TilesDebugPanel />
         </TabPanel>
 
         <TabPanel>

@@ -67,7 +67,7 @@ class Map {
     for (const tilesetDatum of this.mapData.tilesets) {
       const { firstgid } = tilesetDatum
       const lengthAfterProcessingLastTileset = Object.values(this.tiles).length
-      let loopIndex = 1
+      let loopIndex = 0
 
       while (loopIndex <= tilesetDatum.tilecount) {
         const tileIndex = (loopIndex - 1) + firstgid
@@ -91,8 +91,6 @@ class Map {
     const tile = this.tiles[tileID]
 
     if (tile) {
-      context.drawImage(tile.image, tile.x, tile.y, tile.width, tile.height, destination.x, destination.y, tile.width, tile.height)
-
       if (tile.objectgroup) {
         for (const object of tile.objectgroup.objects) {
           const objectX = destination.x + object.x + (object.width / 2)
@@ -101,9 +99,14 @@ class Map {
           Composite.add(this.bodies, Bodies.rectangle(objectX, objectY, object.width, object.height, {
             label: object.name,
             isStatic: true,
+            render: {
+              renderProps: [tile.image, tile.x, tile.y, tile.width, tile.height, destination.x, destination.y, tile.width, tile.height],
+            },
           }))
         }
       }
+
+      context.drawImage(tile.image, tile.x, tile.y, tile.width, tile.height, destination.x, destination.y, tile.width, tile.height)
     }
   }
 
@@ -116,6 +119,8 @@ class Map {
   \***************************************************************************/
 
   constructor (options) {
+    window.maps || (window.maps = [])
+    window.maps.push(this)
     this.options = options
   }
 
