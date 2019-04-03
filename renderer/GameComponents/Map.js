@@ -119,6 +119,8 @@ class Map {
   \***************************************************************************/
 
   constructor (options) {
+    window.maps || (window.maps = [])
+    window.maps.push(this)
     this.options = options
   }
 
