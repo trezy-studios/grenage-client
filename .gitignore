@@ -1,4 +1,5 @@
 .DS_Store
+thumbs.db
+yarn-error.log
 dist/
 node_modules/
-thumbs.db
