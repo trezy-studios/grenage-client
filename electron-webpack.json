@@ -1,0 +1,23 @@
+{
+  "renderer": {
+    "webpackConfig": "src/renderer/webpack.config.js"
+  },
+  "whiteListedModules": [
+    "@tweenjs/tween.js",
+    "axios",
+    "electron-is-dev",
+    "electron-store",
+    "lodash",
+    "matter-js",
+    "prop-types",
+    "rafael",
+    "react",
+    "react-dom",
+    "react-redux",
+    "redux",
+    "redux-logger",
+    "redux-starter-kit",
+    "redux-thunk",
+    "zxcvbn"
+  ]
+}

@@ -1,5 +1,4 @@
 .DS_Store
-yarn-error.log
-
+dist/
 node_modules/
-renderer/.next/
+thumbs.db
