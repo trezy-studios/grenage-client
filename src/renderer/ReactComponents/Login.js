@@ -27,7 +27,7 @@ import { actions } from '../store'
 
 // Local constants
 const mapDispatchToProps = dispatch => bindActionCreators({
-  // addItem: actions.inventory.addItem,
+  login: actions.user.login,
 }, dispatch)
 const mapStateToProps = ({ user }) => ({ user })
 
@@ -35,13 +35,15 @@ const mapStateToProps = ({ user }) => ({ user })
 
 
 
-class LoginApp extends React.Component {
+@connect(mapStateToProps, mapDispatchToProps)
+class Login extends React.Component {
   /***************************************************************************\
     Class Properties
   \***************************************************************************/
 
   state = {
     email: '',
+    isLoggingIn: false,
     password: '',
     validity: {
       email: true,
@@ -74,20 +76,20 @@ class LoginApp extends React.Component {
   }
 
   _handleSubmit = async event => {
+    const { login } = this.props
     const {
       email,
       password,
     } = this.state
     event.preventDefault()
 
-    console.log('submitting!')
+    this.setState({ isLoggingIn: true })
 
-    const results = await axios.post('http://trezy.local:3001/auth/login', {
-      email,
-      password,
-    })
+    const results = await login(email, password)
 
-    console.log('submitted!', results)
+    this.setState({ isLoggingIn: false })
+
+    console.log(results)
   }
 
 
@@ -101,11 +103,25 @@ class LoginApp extends React.Component {
   render () {
     const {
       email,
+      isLoggingIn,
       password,
     } = this.state
+    const { user } = this.props
+
+    console.log(this.props)
 
     return (
       <form onSubmit={this._handleSubmit}>
+        <div>
+          {user.isLoggedIn.toString()}
+        </div>
+
+        {isLoggingIn && (
+          <div>
+            Loading...
+          </div>
+        )}
+
         <fieldset>
           <label htmlFor="email">
             Email
@@ -158,6 +174,5 @@ class LoginApp extends React.Component {
 
 
 
-connect(LoginApp)
 
-export { LoginApp }
+export { Login }

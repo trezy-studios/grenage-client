@@ -7,6 +7,7 @@ import inventory from './inventory'
 import keymap from './keymap'
 import playerEntityID from './playerEntityID'
 import ui from './ui'
+import user from './user'
 
 
 
@@ -21,4 +22,5 @@ export default combineReducers({
   keymap,
   playerEntityID,
   ui,
+  user,
 })

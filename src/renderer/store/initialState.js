@@ -10,7 +10,7 @@ import path from 'path'
 // Local constants
 const localStore = new ElectronStore
 const keymapsPath = path.resolve(__dirname, '..', '..', '..', 'keymaps')
-const keymapOverrides = localStore.get('keymaps') || {}
+const keymapOverrides = localStore.get('keymaps', {})
 
 
 
@@ -121,10 +121,12 @@ const initialState = {
   },
 
   user: {
-    accessToken: localStore.get('user.accessToken'),
-    email: localStore.get('user.email'),
-    loggedIn: localStore.get('user.loggedIn'),
+    accessToken: null,
+    isLoggedIn: false,
+    user: null,
   },
+
+  ...localStore.get('state', {}),
 }
 
 

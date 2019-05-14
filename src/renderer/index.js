@@ -6,13 +6,32 @@ import './styles/app.css'
 
 
 
+// Module imports
+import { Provider } from 'react-redux'
+import React from 'react'
+import ReactDOM from 'react-dom'
+
+
+
+
+
 // Local imports
-import { Game } from './Game'
+import {
+  ControlManager,
+  GameRenderer,
+} from './GameComponents'
+import { initStore } from './store'
+import { App } from './ReactComponents'
 
 
 
 
 
-const game = new Game
-
-window.onload = game.initialize
+window.onload = () => {
+  ReactDOM.render(
+    <Provider store={initStore()}>
+      <App />
+    </Provider>,
+    document.querySelector('#app-root')
+  )
+}
