@@ -1,6 +1,4 @@
 // Module imports
-import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
 import React from 'react'
 
 
@@ -12,7 +10,6 @@ import {
   ControlManager,
   GameRenderer,
 } from '../GameComponents'
-import { actions } from '../store'
 import {
   Login,
   Ping,
@@ -22,45 +19,10 @@ import {
 
 
 
-// Local constants
-const mapDispatchToProps = dispatch => bindActionCreators({
-  ping: actions.debug.ping,
-}, dispatch)
-
-
-
-
-
-@connect(null, mapDispatchToProps)
 class App extends React.Component {
   /***************************************************************************\
-    Private Methods
+    Public Methods
   \***************************************************************************/
-
-  _startGame = () => {
-    this.gameRenderer = new GameRenderer({
-      element: document.querySelector('#game-root'),
-    })
-
-    this.controlManager = new ControlManager()
-  }
-
-  _startPing = () => {
-    const { ping } = this.props
-    setInterval(ping, 1000)
-  }
-
-
-
-
-
-  /***************************************************************************\
-    Private Methods
-  \***************************************************************************/
-
-  componentDidMount () {
-    this._startPing()
-  }
 
   render () {
     return (
