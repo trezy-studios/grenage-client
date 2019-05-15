@@ -12,6 +12,12 @@ export default function (state = initialState.debug, action) {
   } = action
 
   switch (type) {
+    case actionTypes.PING:
+      return {
+        ...state,
+        ping: payload.pingDuration,
+      }
+
     case actionTypes.SET_CONTROL_STATE:
       if (payload.control) {
         if (payload.key === '`') {
