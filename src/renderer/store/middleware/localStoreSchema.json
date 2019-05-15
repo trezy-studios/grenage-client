@@ -1,0 +1,21 @@
+{
+  "schema": {
+    "user": {
+      "properties": {
+        "accessToken": {
+          "default": null,
+          "type": ["null", "string"]
+        },
+        "email": {
+          "format": "email",
+          "type": ["null", "string"]
+        },
+        "isLoggedIn": {
+          "default": false,
+          "type": "boolean"
+        }
+      },
+      "type": "object"
+    }
+  }
+}

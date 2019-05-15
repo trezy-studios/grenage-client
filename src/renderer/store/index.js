@@ -15,6 +15,7 @@ import thunk from 'redux-thunk'
 import * as actions from './actions'
 import rootReducer from './reducers'
 import initialState from './initialState'
+import { localStoreMiddleware } from './middleware/localStore'
 
 
 
@@ -30,7 +31,7 @@ let store = null
 const initStore = preloadedState => {
   if (!store) {
     store = configureStore({
-      middleware: [thunk, logger],
+      middleware: [thunk, logger, localStoreMiddleware],
       preloadedState: initialState,
       reducer: rootReducer,
     })
