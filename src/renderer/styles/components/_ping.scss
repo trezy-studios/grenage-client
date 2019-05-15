@@ -1,0 +1,51 @@
+$rating-colors: (
+  1: red,
+  2: yellow,
+  3: yellow,
+  4: green,
+  5: green,
+);
+
+#ping {
+  align-items: center;
+  bottom: 2rem;
+  display: flex;
+  position: absolute;
+  right: 2rem;
+
+  #ping-meter {
+    align-items: end;
+    display: grid;
+    grid-gap: 0.2rem;
+    grid-template-columns: repeat(5, 1rem);
+    grid-template-rows: auto;
+    height: 1em;
+
+    &:not(:last-child) {
+      margin-right: 1rem;
+    }
+
+    @each $valueIndex, $bar-color in $rating-colors {
+      &[data-value='#{$valueIndex}'] {
+        --bar-color: #{$bar-color};
+
+        @for $barIndex from 1 through $valueIndex {
+          .ping-bar:nth-child(#{$barIndex}) {
+            background-color: var(--bar-color);
+          }
+        }
+      }
+    }
+  }
+
+  .ping-bar {
+    background-color: grey;
+    display: block;
+
+    @for $index from 1 through 5 {
+      &:nth-child(#{$index}) {
+        height: (100% / 5) * $index;
+      }
+    }
+  }
+}

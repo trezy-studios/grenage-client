@@ -1,0 +1,16 @@
+input, textarea {
+  &,
+  &[type=email],
+  &[type=number],
+  &[type=text],
+  &[type=url] {
+    background-color: transparent;
+    border: none;
+    color: inherit;
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    margin: 0;
+    padding: 0;
+  }
+}

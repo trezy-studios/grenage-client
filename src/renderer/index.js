@@ -1,6 +1,6 @@
 // Style imports
-import './styles/reset.css'
-import './styles/app.css'
+import './styles/reset.scss'
+import './styles/app.scss'
 
 
 

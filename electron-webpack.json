@@ -1,10 +1,8 @@
 {
-  "renderer": {
-    "webpackConfig": "src/renderer/webpack.config.js"
-  },
   "whiteListedModules": [
     "@tweenjs/tween.js",
     "axios",
+    "classnames",
     "electron-is-dev",
     "electron-store",
     "lodash",
