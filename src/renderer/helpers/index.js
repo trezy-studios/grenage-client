@@ -1,3 +1,4 @@
+export * from './capitalize'
 export * from './convertObjectToQueryParams'
 export * from './fetchJSON'
 export * from './getItemURL'

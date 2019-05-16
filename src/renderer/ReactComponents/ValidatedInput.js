@@ -1,8 +1,16 @@
 // Module imports
-// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { orderBy } from 'lodash'
 import PropTypes from 'prop-types'
 import React from 'react'
+import zxcvbn from 'zxcvbn'
+
+
+
+
+
+// Local imports
+import { capitalize } from '../helpers'
 
 
 
@@ -12,6 +20,55 @@ import React from 'react'
 const invalidTypeMessages = {
   email: 'Not a valid email address',
   url: 'Not a valid URL',
+}
+class Message {
+  /***************************************************************************\
+    Class Properties
+  \***************************************************************************/
+
+  types = {
+    error: {
+      icon: 'bomb',
+      priority: 3,
+    },
+    warning: {
+      icon: 'exclamation-triangle',
+      priority: 2,
+    },
+    info: {
+      icon: 'comment',
+      priority: 1,
+    },
+  }
+
+
+
+
+
+  /***************************************************************************\
+    Public Methods
+  \***************************************************************************/
+
+  constructor (type, message) {
+    this.message = message
+    this.type = type
+  }
+
+
+
+
+
+  /***************************************************************************\
+    Getters
+  \***************************************************************************/
+
+  get icon () {
+    return this.types[this.type].icon
+  }
+
+  get priority () {
+    return this.types[this.type].priority
+  }
 }
 
 
@@ -25,7 +82,53 @@ class ValidatedInput extends React.Component {
 
   state = {
     hasBeenFocused: false,
+    isPasswordValid: true,
+    isValid: true,
     messages: [],
+    passwordStrength: 0,
+    showPassword: false,
+  }
+
+
+
+
+
+  static defaultProps = {
+    className: '',
+    disabled: false,
+    inputRef: () => {},
+    maxLength: null,
+    minLength: null,
+    onBlur: () => {},
+    onInput: () => {},
+    onValidate: () => {},
+    pattern: null,
+    required: false,
+    showStrength: false,
+    showErrors: true,
+    showInfo: false,
+    showWarnings: false,
+    type: 'text',
+    value: '',
+  }
+
+  static propTypes = {
+    className: PropTypes.string,
+    disabled: PropTypes.bool,
+    inputRef: PropTypes.func,
+    maxLength: PropTypes.string,
+    minLength: PropTypes.string,
+    onBlur: PropTypes.func,
+    onInput: PropTypes.func,
+    onValidate: PropTypes.func,
+    pattern: PropTypes.string,
+    required: PropTypes.bool,
+    showStrength: PropTypes.bool,
+    showErrors: PropTypes.bool,
+    showInfo: PropTypes.bool,
+    showWarnings: PropTypes.bool,
+    type: PropTypes.string,
+    value: PropTypes.string,
   }
 
 
@@ -60,8 +163,19 @@ class ValidatedInput extends React.Component {
     }
   }
 
+  _handleShowPasswordClick = event => {
+    event.preventDefault()
+    this.setState({ showPassword: !this.state.showPassword })
+    this._input.focus()
+  }
+
   _validate = (messages = []) => {
-    const { onValidate } = this.props
+    const {
+      onValidate,
+      showWarnings,
+      showInfo,
+      type,
+    } = this.props
     const {
       badInput,
       patternMismatch,
@@ -72,50 +186,66 @@ class ValidatedInput extends React.Component {
       valueMissing,
     } = this._input.validity
 
+    const newState = {}
+    let passwordEvaluation = null
+
+    if (type === 'password') {
+      newState.isPasswordValid = true
+
+      passwordEvaluation = zxcvbn(this._input.value)
+
+      newState.passwordStrength = passwordEvaluation.score
+
+      if (showWarnings && passwordEvaluation.feedback.warning) {
+        messages.push(new Message('warning', passwordEvaluation.feedback.warning))
+        newState.isPasswordValid = false
+      }
+
+      if (showInfo && passwordEvaluation.feedback.suggestions.length) {
+        for (const suggestion of passwordEvaluation.feedback.suggestions) {
+          messages.push(new Message('info', `Suggestion: ${suggestion}`))
+        }
+      }
+    }
+
     if (!valid) {
       if (badInput || typeMismatch) {
         const defaultMessage = invalidTypeMessages[this._input.type] || `Doesn't match field type (${this._input.type})`
 
-        messages.push({
-          icon: 'exclamation-triangle',
-          message: this._input.getAttribute('data-badinput-explainer') || defaultMessage,
-        })
+        messages.push(new Message('error', this._input.getAttribute('data-badinput-explainer') || defaultMessage))
       }
 
       if (patternMismatch) {
         const message = this._input.getAttribute('data-pattern-explainer')
 
         if (message) {
-          messages.push({
-            icon: 'exclamation-triangle',
-            message,
-          })
+          messages.push(new Message('error', message))
         }
       }
 
       if (tooLong) {
-        messages.push({
-          icon: 'exclamation-triangle',
-          message: this._input.getAttribute('data-maxlength-explainer') || `Must be fewer than ${this._input.getAttribute('maxlength')} characters`,
-        })
+        const message = this._input.getAttribute('data-maxlength-explainer') || `Must be fewer than ${this._input.getAttribute('maxlength')} characters`
+
+        messages.push(new Message('error', message))
       }
 
       if (tooShort) {
-        messages.push({
-          icon: 'exclamation-triangle',
-          message: this._input.getAttribute('data-minlength-explainer') || `Must be longer than ${this._input.getAttribute('minlength')} characters`,
-        })
+        const message = this._input.getAttribute('data-minlength-explainer') || `Must be longer than ${this._input.getAttribute('minlength')} characters`
+
+        messages.push(new Message('error', message))
       }
 
       if (valueMissing) {
-        messages.push({
-          icon: 'exclamation-triangle',
-          message: this._input.getAttribute('data-required-explainer') || 'This field is required',
-        })
+        const message = this._input.getAttribute('data-required-explainer') || 'This field is required'
+
+        messages.push(new Message('error', message))
       }
     }
 
-    this.setState({ messages: orderBy(messages, ['priority'], ['desc']) })
+    this.setState({
+      ...newState,
+      messages: orderBy(messages, ['priority'], ['desc']),
+    })
 
     onValidate({
       type: 'validate',
@@ -147,26 +277,30 @@ class ValidatedInput extends React.Component {
       'maxLength',
     ]
 
-    comparedProps = comparedProps.map(fieldName => this.props[fieldName] === prevProps[fieldName])
-
-    if (comparedProps.includes(false)) {
+    if (!comparedProps.every(fieldName => this.props[fieldName] === prevProps[fieldName])) {
       this._validate()
     }
   }
 
   isValid = () => {
     if (this._input) {
-      return this._input.validity.valid
+      return this._input.validity.valid && this.state.isPasswordValid
     }
 
     return true
   }
 
   render () {
-    const { hasBeenFocused } = this.state
+    const {
+      hasBeenFocused,
+      showPassword,
+      passwordStrength,
+    } = this.state
     const {
       className,
       disabled,
+      showStrength,
+      type,
     } = this.props
 
     const classNames = [
@@ -183,12 +317,41 @@ class ValidatedInput extends React.Component {
           data-t="validated-input:input"
           {...this.renderProps} />
 
-        {/* <FontAwesomeIcon
-          className="validity-indicator"
-          data-t="validated-input:validity-icon"
-          hidden={!hasBeenFocused || this.isValid()}
-          icon="exclamation-triangle"
-          fixedWidth /> */}
+        {(type === 'password') && (
+          <button
+            aria-label={showPassword ? 'Hide password from view' : 'Make password visible.'}
+            className="show-password"
+            data-t="password-input:reveal-button"
+            disabled={disabled}
+            onClick={this._handleShowPasswordClick}
+            tabIndex={-1}
+            type="button">
+            <FontAwesomeIcon icon={showPassword ? 'eye-slash' : 'eye'} fixedWidth />
+          </button>
+        )}
+
+        <div
+          data-animate
+          data-animation="pulse"
+          data-animation-duration="1s"
+          hidden={!hasBeenFocused || this.isValid()}>
+          <FontAwesomeIcon
+            className="validity-indicator"
+            data-t="validated-input:validity-icon"
+            icon="exclamation-triangle"
+            fixedWidth />
+        </div>
+
+        {(type === 'password') && showStrength && (
+          <meter
+            className="strength-meter"
+            data-t="password-input:strength-meter"
+            low="2"
+            high="3"
+            max="4"
+            optimum="4"
+            value={passwordStrength} />
+        )}
 
         {this.renderMessages()}
       </div>
@@ -197,28 +360,51 @@ class ValidatedInput extends React.Component {
 
   renderMessages = () => {
     const {
+      showErrors,
+      showInfo,
+      showWarnings,
+    } = this.props
+    const {
       hasBeenFocused,
       messages,
     } = this.state
-
-    console.log(this.state)
 
     return (
       <ul
         className="messages"
         data-t="validated-input:message-list"
         hidden={!hasBeenFocused}>
-        {messages.map(({ icon, message, type }) => (
-          <li
-            key={message}
-            className={`${type || 'error'} message`}
-            data-t="validated-input:message-list:item">
-            {/* <FontAwesomeIcon
-              icon={icon}
-              fixedWidth /> */}
-            {message}
-          </li>
-        ))}
+        {messages.map(({ icon, message, type }) => {
+          let shouldShow = true
+
+          switch (type) {
+            case 'error':
+              shouldShow = showErrors
+              break
+            case 'info':
+              shouldShow = showInfo
+              break
+            case 'warning':
+              shouldShow = showWarnings
+              break
+          }
+
+          if (!shouldShow) {
+            return null
+          }
+
+          return (
+            <li
+              key={message}
+              className={`${type} message`}
+              data-t="validated-input:message-list:item">
+              <FontAwesomeIcon
+                icon={icon}
+                fixedWidth />
+              {message}
+            </li>
+          )
+        })}
       </ul>
     )
   }
@@ -232,6 +418,11 @@ class ValidatedInput extends React.Component {
   \***************************************************************************/
 
   get renderProps () {
+    const { type } = this.props
+    const {
+      isValid,
+      showPassword,
+    } = this.state
     const renderProps = {
       ...this.props,
       onBlur: this._handleBlur,
@@ -240,32 +431,23 @@ class ValidatedInput extends React.Component {
         this.props.inputRef(_input)
         this._input = _input
       },
+      type: ((type === 'password') && showPassword) ? 'text' : type,
     }
 
     delete renderProps.className
     delete renderProps.inputRef
     delete renderProps.onValidate
+    delete renderProps.showErrors
+    delete renderProps.showStrength
+    delete renderProps.showWarnings
+    delete renderProps.showInfo
+
+    if (!isValid) {
+      renderProps.pattern = '$.^'
+    }
 
     return renderProps
   }
-}
-
-
-
-
-
-ValidatedInput.defaultProps = {
-  inputRef: () => {},
-  onBlur: () => {},
-  onInput: () => {},
-  onValidate: () => {},
-}
-
-ValidatedInput.propTypes = {
-  inputRef: PropTypes.func,
-  onBlur: PropTypes.func,
-  onInput: PropTypes.func,
-  onValidate: PropTypes.func,
 }
 
 

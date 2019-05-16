@@ -1,139 +1,28 @@
 meter {
-  // -webkit-appearance: none;
   border: none;
-  width: 10rem;
+  width: 100%;
 
   &::-webkit-meter-bar,
   &::-webkit-meter-optimum-value,
   &::-webkit-meter-suboptimum-value,
   &::-webkit-meter-even-less-good-value {
-    background-color: transparent;
-    background-position:
-      0% 100%,
-      20% 100%,
-      40% 100%,
-      60% 100%,
-      80% 100%;
-    background-repeat: no-repeat;
-    background-size: 1.4rem 100%;
-    width: 100% !important;
-  }
-
-  &::-webkit-meter-optimum-value {
-    --bar-color: green;
+    background-color: var(--bar-color);
+    background-image: none;
   }
 
   &::-webkit-meter-bar {
     --bar-color: grey;
-
-    background-image:
-      linear-gradient(
-        to top,
-        var(--bar-color) 20%,
-        transparent 20%
-      ),
-      linear-gradient(
-        to top,
-        var(--bar-color) 40%,
-        transparent 40%
-      ),
-      linear-gradient(
-        to top,
-        var(--bar-color) 60%,
-        transparent 60%
-      ),
-      linear-gradient(
-        to top,
-        var(--bar-color) 80%,
-        transparent 80%
-      ),
-      linear-gradient(
-        to top,
-        var(--bar-color),
-        var(--bar-color)
-      );
   }
 
   &::-webkit-meter-optimum-value {
     --bar-color: green;
-
-    background-image:
-      linear-gradient(
-        to top,
-        var(--bar-color) 20%,
-        transparent 20%
-      ),
-      linear-gradient(
-        to top,
-        var(--bar-color) 40%,
-        transparent 40%
-      ),
-      linear-gradient(
-        to top,
-        var(--bar-color) 60%,
-        transparent 60%
-      ),
-      linear-gradient(
-        to top,
-        var(--bar-color) 60%,
-        transparent 60%
-      );
   }
 
-  &::-webkit-meter-optimum-value {
-    --bar-color: green;
-
-    background-image:
-      linear-gradient(
-        to top,
-        var(--bar-color) 20%,
-        transparent 20%
-      ),
-      linear-gradient(
-        to top,
-        var(--bar-color) 40%,
-        transparent 40%
-      ),
-      linear-gradient(
-        to top,
-        var(--bar-color) 60%,
-        transparent 60%
-      ),
-      linear-gradient(
-        to top,
-        var(--bar-color) 60%,
-        transparent 60%
-      );
+  &::-webkit-meter-suboptimum-value {
+    --bar-color: yellow;
   }
 
   &::-webkit-meter-even-less-good-value {
     --bar-color: red;
-
-    background-image:
-      linear-gradient(
-        to top,
-        var(--bar-color) 20%,
-        transparent 20%
-      ),
-      linear-gradient(
-        to top,
-        var(--bar-color) 40%,
-        transparent 40%
-      ),
-      linear-gradient(
-        to top,
-        var(--bar-color) 60%,
-        transparent 60%
-      ),
-      linear-gradient(
-        to top,
-        var(--bar-color) 80%,
-        transparent 80%
-      ),
-      linear-gradient(
-        to top,
-        var(--bar-color),
-        var(--bar-color)
-      );
   }
 }

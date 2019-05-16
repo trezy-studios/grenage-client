@@ -1,4 +1,4 @@
-function isNumberInRange (number, range) {
+const isNumberInRange = (number, range) => {
   range.sort((a, b) => {
     if (a > b) {
       return 1

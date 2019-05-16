@@ -1,5 +1,9 @@
 {
   "whiteListedModules": [
+    "@fortawesome/fontawesome-svg-core",
+    "@fortawesome/free-brands-svg-icons",
+    "@fortawesome/free-solid-svg-icons",
+    "@fortawesome/react-fontawesome",
     "@tweenjs/tween.js",
     "axios",
     "classnames",
@@ -10,6 +14,7 @@
     "prop-types",
     "rafael",
     "react",
+    "react-countup",
     "react-dom",
     "react-redux",
     "redux",

@@ -1,0 +1,126 @@
+.validated-input {
+  display: flex;
+  position: relative;
+
+  .messages {
+    font-size: 0.8em;
+    left: 0;
+    opacity: 0;
+    pointer-events: none;
+    position: absolute;
+    right: 0;
+    top: 100%;
+    transition: opacity 0.2s;
+    z-index: 1;
+
+    li {
+      background-color: var(--error-color);
+      color: var(--white);
+      display: grid;
+      grid-gap: 1rem;
+      grid-template-columns: auto 1fr;
+      padding: 0.5rem 1rem;
+
+      &.info {
+        background-color: var(--info-color);
+      }
+
+      &.warning {
+        background-color: var(--warn-color);
+      }
+
+      &.error {
+        background-color: var(--error-color);
+      }
+    }
+  }
+
+  .show-password {
+    background: var(--white);
+    border-bottom-left-radius: 0;
+    border-top-left-radius: 0;
+    border-left: 0.1rem solid #999;
+    color: var(--black);
+    padding: 0rem 1rem;
+  }
+
+  .strength-meter {
+    appearance: none;
+    background-color: none;
+    background-image: none;
+    border: none;
+    height: 0.5rem;
+    top: 100%;
+    pointer-events: none;
+    position: absolute;
+    width: 100%;
+    opacity: 0;
+    transition: opacity 0.2s;
+    z-index: 2;
+
+    &[value='0'] {
+      background-image: linear-gradient(
+        to right,
+        var(--error-color) 20%,
+        var(--transparent) 20%
+      );
+    }
+
+    &[value='1'] {
+      background-image: linear-gradient(
+        to right,
+        var(--error-color) 40%,
+        var(--transparent) 40%
+      );
+    }
+
+    &[value='2'] {
+      background-image: linear-gradient(
+        to right,
+        var(--warn-color) 60%,
+        var(--transparent) 60%
+      );
+    }
+
+    &[value='3'] {
+      background-image: linear-gradient(
+        to right,
+        var(--warn-color) 80%,
+        var(--transparent) 80%
+      );
+    }
+
+    &[value='4'] {
+      background-color: var(--success-color);
+    }
+
+    + .messages {
+      top: calc(100% + 0.5rem);
+    }
+  }
+
+  .validity-indicator {
+    animation-name: none;
+    color: var(--error-color);
+    left: calc(100% + 1rem);
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: opacity 0.2s;
+  }
+
+  input:focus {
+    ~ .messages:not(:empty),
+    ~ .strength-meter {
+      opacity: 1;
+    }
+
+    ~ .validity-indicator {
+      opacity: 0;
+    }
+  }
+
+  input:not(:focus) ~ .validity-indicator {
+    animation-name: pulse;
+  }
+}

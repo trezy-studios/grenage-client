@@ -1,4 +1,4 @@
-function isBrowser () {
+const isBrowser = () => {
   return typeof window !== 'undefined'
 }
 

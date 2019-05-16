@@ -9,16 +9,7 @@ import React from 'react'
 
 
 // Local imports
-import {
-  PasswordInput,
-  ValidatedInput,
-} from '.'
-
-
-
-
-
-// Local imports
+import { ValidatedInput } from '.'
 import { actions } from '../store'
 
 
@@ -108,14 +99,10 @@ class Login extends React.Component {
     } = this.state
     const { user } = this.props
 
-    console.log(this.props)
-
     return (
-      <form onSubmit={this._handleSubmit}>
-        <div>
-          {user.isLoggedIn.toString()}
-        </div>
-
+      <form
+        className="login"
+        onSubmit={this._handleSubmit}>
         {isLoggingIn && (
           <div>
             Loading...
@@ -143,16 +130,14 @@ class Login extends React.Component {
             Password
           </label>
 
-          <PasswordInput
+          <ValidatedInput
             aria-label="Password"
             id="password"
             name="password"
             onChange={this._handleChange}
             placeholder="Password"
             required
-            showWarnings
-            showSuggestions
-            showStrength
+            type="password"
             value={password} />
         </fieldset>
 
