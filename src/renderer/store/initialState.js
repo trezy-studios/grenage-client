@@ -77,8 +77,9 @@ const initialState = {
   },
 
   debug: {
+    currentPing: 0,
     enabled: false,
-    ping: 0,
+    previousPing: 0,
     showAllBodies: false,
     wireframesShowEntityAnchorPoints: false,
     wireframesShowEntityBoundingBox: false,

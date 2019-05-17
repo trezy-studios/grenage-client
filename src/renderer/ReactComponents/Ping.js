@@ -2,6 +2,7 @@
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import classnames from 'classnames'
+import CountUp from 'react-countup'
 import React from 'react'
 
 
@@ -19,7 +20,15 @@ import { actions } from '../store'
 const mapDispatchToProps = dispatch => bindActionCreators({
   ping: actions.debug.ping,
 }, dispatch)
-const mapStateToProps = ({ debug: { ping } }) => ({ currentPing: ping })
+const mapStateToProps = ({
+  debug: {
+    currentPing,
+    previousPing,
+  },
+}) => ({
+  currentPing,
+  previousPing,
+})
 
 
 
@@ -36,35 +45,24 @@ class Ping extends React.Component {
   _markupPingString = ping => {
     const paddedString = ping.toString().padStart(3, '0')
 
-    const { result } = paddedString.split('').reduce(this._markupPingStringReducer, {
+    const { result } = paddedString.split('').reduce((accumulator, character) => {
+      if (accumulator.isPadding && character !== '0') {
+        accumulator.isPadding = false
+      }
+
+      const classes = classnames({
+        'text-muted': accumulator.isPadding && character === '0',
+      })
+
+      accumulator.result += `<span class="${classes}">${character}</span>`
+
+      return accumulator
+    }, {
       isPadding: true,
-      result: [],
+      result: '',
     })
 
-    return [...result, 'ms']
-  }
-
-  _markupPingStringReducer = (accumulator, character, index) => {
-    if (accumulator.isPadding && character !== '0') {
-      accumulator.isPadding = false
-    }
-
-    accumulator.result.push(
-      <span
-        className={classnames({
-          'text-muted': accumulator.isPadding && character === '0',
-        })}
-        key={index}>
-        {character}
-      </span>
-    )
-
-    return accumulator
-  }
-
-  _startPing = () => {
-    const { ping } = this.props
-    setInterval(ping, 1000)
+    return `${result}ms`
   }
 
 
@@ -74,8 +72,7 @@ class Ping extends React.Component {
   \***************************************************************************/
 
   componentDidMount () {
-    const { ping } = this.props
-    this.pingIntervalID = setInterval(ping, 1000)
+    this.pingIntervalID = setInterval(this.props.ping, 1000)
   }
 
   componentWillUnmount () {
@@ -83,7 +80,10 @@ class Ping extends React.Component {
   }
 
   render () {
-    const { currentPing } = this.props
+    const {
+      currentPing,
+      previousPing,
+    } = this.props
 
     return (
       <div id="ping">
@@ -98,8 +98,16 @@ class Ping extends React.Component {
           <div className="ping-bar" />
         </div>
 
+        {/* <span>Connecting...</span> */}
+
+        {/* <span>No connection</span> */}
+
         <time dateTime={`PT${currentPing / 1000}S`}>
-          {this._markupPingString(currentPing)}
+          <CountUp
+            duration={1}
+            end={currentPing}
+            formattingFn={this._markupPingString}
+            start={previousPing} />
         </time>
       </div>
     )

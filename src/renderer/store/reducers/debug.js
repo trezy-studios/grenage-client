@@ -15,7 +15,8 @@ export default function (state = initialState.debug, action) {
     case actionTypes.PING:
       return {
         ...state,
-        ping: payload.pingDuration,
+        currentPing: payload.pingDuration,
+        previousPing: state.currentPing,
       }
 
     case actionTypes.SET_CONTROL_STATE:
