@@ -4,11 +4,11 @@
 
   .messages {
     font-size: 0.8em;
-    left: 0;
+    left: 1.2rem;
     opacity: 0;
     pointer-events: none;
     position: absolute;
-    right: 0;
+    right: 1.7rem;
     top: 100%;
     transition: opacity 0.2s;
     z-index: 1;
@@ -36,12 +36,13 @@
   }
 
   .show-password {
-    background: var(--white);
-    border-bottom-left-radius: 0;
-    border-top-left-radius: 0;
-    border-left: 0.1rem solid #999;
-    color: var(--black);
+    margin-left: 1rem;
     padding: 0rem 1rem;
+
+    ~ .messages {
+      left: 1.2rem;
+      right: 10.3rem;
+    }
   }
 
   .strength-meter {
@@ -109,18 +110,22 @@
     transition: opacity 0.2s;
   }
 
-  input:focus {
-    ~ .messages:not(:empty),
-    ~ .strength-meter {
-      opacity: 1;
+  input {
+    z-index: 2;
+
+    &:focus {
+      ~ .messages:not(:empty),
+      ~ .strength-meter {
+        opacity: 1;
+      }
+
+      ~ .validity-indicator {
+        opacity: 0;
+      }
     }
 
-    ~ .validity-indicator {
-      opacity: 0;
+    &:not(:focus) ~ .validity-indicator {
+      animation-name: pulse;
     }
-  }
-
-  input:not(:focus) ~ .validity-indicator {
-    animation-name: pulse;
   }
 }

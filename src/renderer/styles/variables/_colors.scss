@@ -1,31 +1,59 @@
 :root {
-  --white: #feffff;
-  --grey1: #a9a9a9;
-  --grey2: #a0a0a0;
-  --grey3: #525252;
-  --grey4: #3c3c3c;
-  --black: #000;
+  // Vine's Flexible Linear Ramps
+  // https://lospec.com/palette-list/vines-flexible-linear-ramps
 
-  --gold: goldenrod;
+  --blue1: #0e092f;
+  --blue2: #1b1853;
+  --blue3: #222d81;
+  --blue4: #465be7;
+  --blue5: #2ac0f2;
+  --blue6: #7df2cf;
 
-  --green: green;
+  --brown1: #220c27;
+  --brown2: #2f1316;
+  --brown3: #431e1e;
+  --brown4: #74341a;
+  --brown5: #af5d23;
+  --brown6: #f8993a;
 
-  --rust: chocolate;
+  --green1: #0c1327;
+  --green2: #03282b;
+  --green3: #09493f;
+  --green4: #118337;
+  --green5: #57c52b;
+  --green6: #b9ed5e;
 
-  --wood1: #321300;
-  --wood2: #6f3f00;
-  --wood3: #c8913e;
+  --purple1: #1a112e;
+  --purple2: #291945;
+  --purple3: #5e1c5a;
+  --purple4: #8f1767;
+  --purple5: #f45d92;
+  --purple6: #feb58b;
 
-  --leather1: #442823;
-  --leather2: #5a3422;
-  --leather3: #d9a066;
+  --red1: #280b26;
+  --red2: #361027;
+  --red3: #681824;
+  --red4: #b42313;
+  --red5: #f4680b;
+  --red6: #f4c047;
 
-  --pink: #e21bd1;
-  --pink-alt1: #b416a7;
+  --slate1: #19102e;
+  --slate2: #241e44;
+  --slate3: #25315e;
+  --slate4: #3a5c85;
+  --slate5: #56a1bf;
+  --slate6: #97dbd2;
 
-  --background-color: var(--grey3);
+  --black: #150a1f;
+  --white: #fffdf0;
+  --transparent: transparent;
+
+  --background-color: var(--slate3);
   --background-alt-color: var(--grey2);
   --background-light-color: var(--grey4);
 
-  --success-color: var(--green);
+  --error-color: var(--red4);
+  --info-color: var(--blue4);
+  --success-color: var(--green4);
+  --warn-color: var(--red6);
 }

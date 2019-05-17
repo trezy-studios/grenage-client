@@ -1,5 +1,6 @@
 i {
   background-size: cover;
+  color: currentColor;
   display: inline-block;
   height: var(--icon-size-regular);
   width: var(--icon-size-regular);
@@ -10,6 +11,42 @@ i {
 
     * {
       fill: currentColor;
+    }
+  }
+
+  &.exclamation-triangle {
+    background-image: url(/icons/exclamation-triangle.png);
+    height: 1.6rem;
+    width: 1.6rem;
+  }
+
+  &.gem {
+    &.large {
+      height: 3.2rem;
+      width: 1.6rem;
+    }
+
+    &,
+    &.medium {
+      height: 1.6rem;
+      width: 0.8rem;
+    }
+
+    &.small {
+      height: 1rem;
+      width: 0.6rem;
+    }
+
+    @each $type in (error, info, success) {
+      &.#{$type} {
+        background-image: url(/icons/gem.#{$type}.medium.png);
+
+        @each $size in (small, medium, large) {
+          &.#{$size} {
+            background-image: url(/icons/gem.#{$type}.#{$size}.png);
+          }
+        }
+      }
     }
   }
 }

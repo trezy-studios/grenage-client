@@ -1,5 +1,4 @@
 // Module imports
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { orderBy } from 'lodash'
 import PropTypes from 'prop-types'
 import React from 'react'
@@ -10,6 +9,7 @@ import zxcvbn from 'zxcvbn'
 
 
 // Local imports
+import { Icon } from '.'
 import { capitalize } from '../helpers'
 
 
@@ -326,7 +326,7 @@ class ValidatedInput extends React.Component {
             onClick={this._handleShowPasswordClick}
             tabIndex={-1}
             type="button">
-            <FontAwesomeIcon icon={showPassword ? 'eye-slash' : 'eye'} fixedWidth />
+            <Icon icon={showPassword ? 'eye-slash' : 'eye'} />
           </button>
         )}
 
@@ -335,11 +335,9 @@ class ValidatedInput extends React.Component {
           data-animation="pulse"
           data-animation-duration="1s"
           hidden={!hasBeenFocused || this.isValid()}>
-          <FontAwesomeIcon
+          <Icon
             className="validity-indicator"
-            data-t="validated-input:validity-icon"
-            icon="exclamation-triangle"
-            fixedWidth />
+            icon="exclamation-triangle" />
         </div>
 
         {(type === 'password') && showStrength && (
@@ -398,9 +396,8 @@ class ValidatedInput extends React.Component {
               key={message}
               className={`${type} message`}
               data-t="validated-input:message-list:item">
-              <FontAwesomeIcon
-                icon={icon}
-                fixedWidth />
+
+              <Icon icon={icon} />
               {message}
             </li>
           )

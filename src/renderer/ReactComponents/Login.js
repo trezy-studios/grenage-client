@@ -110,10 +110,6 @@ class Login extends React.Component {
         )}
 
         <fieldset>
-          <label htmlFor="email">
-            Email
-          </label>
-
           <ValidatedInput
             aria-label="Email"
             id="email"
@@ -126,17 +122,18 @@ class Login extends React.Component {
         </fieldset>
 
         <fieldset>
-          <label htmlFor="password">
-            Password
-          </label>
-
           <ValidatedInput
             aria-label="Password"
+            data-pattern-explainer="This is an error!"
             id="password"
             name="password"
             onChange={this._handleChange}
+            pattern="\d"
             placeholder="Password"
             required
+            showErrors
+            showInfo
+            showWarnings
             type="password"
             value={password} />
         </fieldset>

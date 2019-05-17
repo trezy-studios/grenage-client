@@ -1,9 +1,9 @@
 $rating-colors: (
-  1: red,
-  2: yellow,
-  3: yellow,
-  4: green,
-  5: green,
+  1: --error-color,
+  2: --warn-color,
+  3: --warn-color,
+  4: --success-color,
+  5: --success-color,
 );
 
 #ping {
@@ -27,7 +27,7 @@ $rating-colors: (
 
     @each $valueIndex, $bar-color in $rating-colors {
       &[data-value='#{$valueIndex}'] {
-        --bar-color: #{$bar-color};
+        --bar-color: var(#{$bar-color});
 
         @for $barIndex from 1 through $valueIndex {
           .ping-bar:nth-child(#{$barIndex}) {

@@ -1,0 +1,32 @@
+button {
+  align-items: center;
+  background-color: transparent;
+  background-image: none;
+  border-image-source: url(/ui/button.png);
+  border-image-slice: 5 6 fill;
+  border-width: 1rem 1.2rem;
+  color: var(--red3);
+  cursor: pointer;
+  display: flex;
+  font-family: inherit;
+  font-size: inherit;
+  margin: -0.2rem 0;
+  outline: none;
+  padding: 1rem;
+
+  &:focus {
+    border-image-source: url(/ui/button.focus.png);
+  }
+
+  i {
+    align-self: center;
+
+    &:first-child {
+      margin-right: 1rem;
+    }
+
+    &:last-child {
+      margin-left: 1rem;
+    }
+  }
+}

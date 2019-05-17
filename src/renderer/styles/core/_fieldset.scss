@@ -2,6 +2,10 @@ fieldset {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
 
+  &:not(:last-child) {
+    margin-bottom: 2rem;
+  }
+
   legend {
     grid-column: span 2;
   }
